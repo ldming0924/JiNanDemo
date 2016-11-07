@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--  <ImageView
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:scaleType="fitXY"
+          android:src="@drawable/animotion_back" />-->
+    <com.kawakp.demingliu.jinandemo.utils.MyAnimation
+        android:id="@+id/anition"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/lin_back"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/animotion_layout_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:id="@+id/animotion_forpressure_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="56dp"
+            android:layout_marginStart="56dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/animotion_fortemp_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="44dp"
+            android:layout_marginStart="44dp"
+            android:layout_toEndOf="@+id/animotion_forpressure_1"
+            android:layout_toRightOf="@+id/animotion_forpressure_1"
+            android:ellipsize="end"
+            android:singleLine="true"
+
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/textView32"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/animotion_forpressure_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="103dp"
+            android:layout_marginRight="103dp"
+            android:textSize="10sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/animotion_layout_1"
+        android:layout_marginTop="60dp">
+
+        <TextView
+            android:id="@+id/animotion_returnpressure_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+
+            android:layout_marginLeft="58dp"
+            android:layout_marginStart="58dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/animotion_returntemp_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="41dp"
+            android:layout_marginStart="41dp"
+
+            android:layout_toEndOf="@+id/animotion_returnpressure_1"
+            android:layout_toRightOf="@+id/animotion_returnpressure_1"
+            android:ellipsize="end"
+            android:singleLine="true"
+
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/animotion_returntemp_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+
+            android:ellipsize="end"
+            android:singleLine="true"
+
+            android:textSize="10sp" />
+
+
+        <TextView
+            android:id="@+id/animotion_returnpressure_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="105dp"
+            android:layout_marginRight="105dp"
+
+            android:textSize="10sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/animotion_water"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="64dp"
+        android:layout_marginTop="230dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+
+        android:textSize="10sp" />
+
+
+    <!-- <android.support.percent.PercentRelativeLayout
+         android:layout_alignParentRight="true"
+         android:layout_width="wrap_content"
+         android:layout_height="match_parent"
+         xmlns:android="http://schemas.android.com/apk/res/android"
+         xmlns:app="http://schemas.android.com/apk/res-auto"
+         android:layout_marginRight="@dimen/h372">
+         <ImageView
+             android:id="@+id/animotion_fan1"
+             android:layout_width="0dp"
+             android:layout_height="0dp"
+             android:background="@drawable/fan1"
+             app:layout_heightPercent="5%"
+             app:layout_widthPercent="5%"/>
+         <ImageView
+             android:id="@+id/animotion_fan2"
+             android:layout_width="0dp"
+             android:layout_height="0dp"
+             android:background="@drawable/fan1"
+             app:layout_heightPercent="5%"
+             app:layout_widthPercent="3%"/>
+         <ImageView
+             android:id="@+id/animotion_fan3"
+             android:layout_width="0dp"
+             android:layout_height="0dp"
+             android:background="@drawable/fan1"
+             app:layout_heightPercent="5%"
+             app:layout_widthPercent="3%"/>
+         <ImageView
+             android:id="@+id/animotion_fan4"
+             android:layout_width="0dp"
+             android:layout_height="0dp"
+             android:background="@drawable/fan1"
+             app:layout_heightPercent="5%"
+             app:layout_widthPercent="3%"/>
+     </android.support.percent.PercentRelativeLayout>-->
+
+
+</RelativeLayout>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kawakp.demingliu.jinandemo">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+
+    <application
+        android:name=".application.MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/logo"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".activity.StartAtivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.LoginActivity"/>
+        <activity android:name=".activity.AnimotionActivity"/>
+        <activity android:name=".activity.DeviceListActivity"/>
+        <activity android:name=".activity.DeviceMainActivity"/>
+        <activity android:name=".activity.MainActivity" android:launchMode="singleTask"/>
+        <activity android:name=".activity.RangeActivity"/>
+        <activity android:name=".activity.RunSetActivity"/>
+        <activity android:name=".activity.MyLockActivity"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar"/>
+        
+        
+        <service android:name=".service.RealTimeDataService"/>
+        <service android:name=".service.WarnService"/>
+
+        <receiver android:name=".receiver.MyReceive">
+            <intent-filter android:priority="500">
+                <action android:name="com.kawakp.demingliu.jinandemo.service.WarnService"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.NotificationReceiver">
+            <intent-filter android:priority="1000">
+                <action android:name="com.kawakp.demingliu.jinandemo.receiver"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

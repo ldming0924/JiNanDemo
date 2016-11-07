@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">热力管家</string>
+    <string name="enter_account">请输入你的账号</string>
+    <string name="enter_password">请输入你的密码</string>
+    <string name="login">登 录</string>
+
+    <string name="back">返回</string>
+    <string name="set">设置</string>
+    <string name="device_run_manager">设备运行管理</string>
+    <string name="start">启动</string>
+    <string name="stop">停止</string>
+    <string name="one_loop">1号循环泵变频</string>
+    <string name="two_loop">2号循环泵变频</string>
+    <string name="one_repair_ring">1号循环泵工频</string>
+    <string name="two_repair_ring">2号循环泵工频</string>
+    <string name="one_loop_bu">1号补水泵变频</string>
+    <string name="two_loop_bu">2号补水泵变频</string>
+    <string name="one_repair_ring_bu">1号补水泵工频</string>
+    <string name="two_repair_ring_bu">2号补水泵工频</string>
+    <string name="temperature_control">温度阀运行管理</string>
+    <string name="manual_open">手动开度</string>
+    <string name="loop_run_manager">循环泵运行管理</string>
+    <string name="water_supply_pump_run_manager">补水泵管理运行</string>
+    <string name="range_set">量程设定</string>
+    <string name="data_display">数据显示</string>
+    <string name="temperature_parameter">温度参数</string>
+    <string name="pressure_parameter">压力参数</string>
+    <string name="one_water">一次供水温度</string>
+    <string name="water_position_parameter">液位参数</string>
+    <string name="outdoor_parameter">室外参数</string>
+    <string name="device_manager">设备管理</string>
+    <string name="load">正在加载，请稍候...</string>
+    <string name="controlset">控制设定</string>
+    <string name="run_anim">运行动画</string>
+    <string name="history_warn">历史报警</string>
+    <string name="time_selection">时间选择</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
+    <string name="hour">时</string>
+    <string name="minute">分</string>
+    <string name="sure">确定</string>
+    <string name="cancle">取消</string>
+    <string name="param_set">参数设定</string>
+
+
+    <string name="reload">重新加载</string>
+</resources>

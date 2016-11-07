@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_gray"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/textView11"
+            style="@style/TextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/data_display" />
+
+        <LinearLayout
+            android:id="@+id/lin_back"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/r1"
+                style="@style/RelativeLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="13dp">
+
+                <TextView
+                    android:id="@+id/textView12"
+                    style="@style/TextStyleBlue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/temperature_parameter" />
+
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/textView12"
+                    android:layout_marginLeft="70dp"
+                    android:layout_marginStart="70dp"
+                    android:layout_toEndOf="@+id/textView12"
+                    android:layout_toRightOf="@+id/textView12"
+                    android:text="@string/one_water"
+                    android:textColor="@color/black"
+                    android:textSize="19sp" />
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignTop="@+id/textView12"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_toEndOf="@+id/textView12"
+                    android:layout_toRightOf="@+id/textView12"
+                    android:src="@drawable/circle_one" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginRight="14dp"
+                    android:src="@drawable/temperature" />
+
+                <TextView
+                    android:id="@+id/t1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/textView13"
+                    android:layout_alignStart="@+id/textView13"
+                    android:layout_below="@+id/textView12"
+                    android:text="00.0" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/r2"
+                style="@style/RelativeLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="1dp">
+
+                <TextView
+                    android:id="@+id/textView15"
+                    style="@style/TextStyleBlue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/temperature_parameter" />
+
+                <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/textView15"
+                    android:layout_marginLeft="70dp"
+                    android:layout_marginStart="70dp"
+                    android:layout_toEndOf="@+id/textView15"
+                    android:layout_toRightOf="@+id/textView15"
+                    android:text="一次回水温度"
+                    android:textColor="@color/black"
+                    android:textSize="19sp" />
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignTop="@+id/textView15"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_toEndOf="@+id/textView15"
+                    android:layout_toRightOf="@+id/textView15"
+                    android:src="@drawable/circle_one" />
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginRight="14dp"
+                    android:src="@drawable/temperature" />
+
+                <TextView
+                    android:id="@+id/t2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/textView16"
+                    android:layout_alignStart="@+id/textView16"
+                    android:layout_below="@+id/textView16"
+                    android:text="00.0" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/r3"
+                style="@style/RelativeLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="1dp">
+
+                <TextView
+                    android:id="@+id/textView18"
+                    style="@style/TextStyleBlue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/temperature_parameter" />
+
+                <TextView
+                    android:id="@+id/textView19"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/textView18"
+                    android:layout_marginLeft="70dp"
+                    android:layout_marginStart="70dp"
+                    android:layout_toEndOf="@+id/textView18"
+                    android:layout_toRightOf="@+id/textView18"
+                    android:text="二次供水温度"
+                    android:textColor="@color/black"
+                    android:textSize="19sp" />
+
+                <ImageView
+                    android:id="@+id/imageView5"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignTop="@+id/textView18"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_toEndOf="@+id/textView18"
+                    android:layout_toRightOf="@+id/textView18"
+                    android:src="@drawable/circle_two" />
+
+                <ImageView
+                    android:id="@+id/imageView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginRight="14dp"
+                    android:src="@drawable/temperature" />
+
+                <TextView
+                    android:id="@+id/t3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/textView19"
+                    android:layout_alignStart="@+id/textView19"
+                    android:layout_below="@+id/textView19"
+                    android:text="00.0" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/r4"
+                style="@style/RelativeLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="1dp">
+
+                <TextView
+                    android:id="@+id/textView21"
+                    style="@style/TextStyleBlue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/temperature_parameter" />
+
+                <TextView
+                    android:id="@+id/textView22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/textView21"
+                    android:layout_marginLeft="70dp"
+                    android:layout_marginStart="70dp"
+                    android:layout_toEndOf="@+id/textView21"
+                    android:layout_toRightOf="@+id/textView21"
+                    android:text="二次回水温度"
+                    android:textColor="@color/black"
+                    android:textSize="19sp" />
+
+                <ImageView
+                    android:id="@+id/imageView7"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignTop="@+id/textView21"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_toEndOf="@+id/textView21"
+                    android:layout_toRightOf="@+id/textView21"
+                    android:src="@drawable/circle_two" />
+
+                <ImageView
+                    android:id="@+id/imageView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginRight="14dp"
+                    android:src="@drawable/temperature" />
+
+                <TextView
+                    android:id="@+id/t4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/textView22"
+                    android:layout_alignStart="@+id/textView22"
+                    android:layout_below="@+id/textView22"
+                    android:text="00.0" />
+            </RelativeLayout>
+
+            <include layout="@layout/data_display_detail" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

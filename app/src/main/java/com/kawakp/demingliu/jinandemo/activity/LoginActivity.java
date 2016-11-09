@@ -141,7 +141,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
     @Override
     public void onNetResult(int flag, String jsonResult) {
-       // Log.d("TAG", jsonResult + "======登录数据返回=====");
+        Log.d("TAG", jsonResult + "======登录数据返回=====");
         jsonString = jsonResult;
     }
 

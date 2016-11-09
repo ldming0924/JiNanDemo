@@ -165,7 +165,7 @@ public class DeviceListActivity extends BaseActivity implements View.OnClickList
                 if (jsonString == null || jsonString.equals("-1")) {
                     IToast.showToast(DeviceListActivity.this, "获取数据失败，请检查网络");
                 } else {
-                    Log.d("TAG","设备列表："+jsonString);
+                   // Log.d("TAG","设备列表："+jsonString);
                     JSONArray array = JSON.parseArray(jsonString);
                     List<OrgBean> list = JSON.parseArray(array.toString(),OrgBean.class);
 

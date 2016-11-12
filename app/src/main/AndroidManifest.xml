@@ -32,7 +32,7 @@
         <activity android:name=".activity.DeviceListActivity"/>
         <activity android:name=".activity.DeviceMainActivity"/>
         <activity android:name=".activity.MainActivity" android:launchMode="singleTask"/>
-        <activity android:name=".activity.RangeActivity"/>
+
         <activity android:name=".activity.RunSetActivity"/>
         <activity android:name=".activity.MyLockActivity"
             android:launchMode="singleInstance"

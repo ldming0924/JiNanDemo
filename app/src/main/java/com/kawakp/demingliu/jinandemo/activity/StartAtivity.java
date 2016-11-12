@@ -105,7 +105,7 @@ public class StartAtivity extends BaseActivity implements IOnNetResultListener {
                     if (b) {
                         Intent intent_Login = new Intent(StartAtivity.this, DeviceListActivity.class);
                         startActivity(intent_Login);
-
+                        AnimationUtil.finishActivityAnimation(StartAtivity.this);
                         finish();
                     }
                 }

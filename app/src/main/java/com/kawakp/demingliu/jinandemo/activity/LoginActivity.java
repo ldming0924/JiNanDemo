@@ -92,6 +92,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     @Override
     protected void setListen() {
         loginBtn.setOnClickListener(this);
+        //是否记住密码
         remember_password.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -102,6 +103,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                 }
             }
         });
+        //是否自动登录
         auto_login.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

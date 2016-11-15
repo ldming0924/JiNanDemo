@@ -58,7 +58,7 @@ public class StartAtivity extends BaseActivity implements IOnNetResultListener {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d("Start", userName + "　" + passWord + "  " + auto);
+                //Log.d("Start", userName + "　" + passWord + "  " + auto);
                 if (userName == null || passWord == null || auto == null || auto.equals("false")) {
                     startActivity(new Intent(StartAtivity.this, LoginActivity.class));
                     AnimationUtil.finishActivityAnimation(StartAtivity.this);

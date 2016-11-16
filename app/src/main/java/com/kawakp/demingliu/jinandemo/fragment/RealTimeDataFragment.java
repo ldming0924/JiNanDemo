@@ -35,6 +35,9 @@ import com.kawakp.demingliu.jinandemo.bean.ChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
 import com.kawakp.demingliu.jinandemo.bean.MyElementBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
+import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
 import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.DrawChart;
@@ -60,26 +63,21 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.Response;
+
 
 /**
  * Created by deming.liu on 2016/7/5.
  */
-public class RealTimeDataFragment extends BaseFragment implements View.OnClickListener,IOnNetResultListener{
-   // private LinearLayout lin_back;
-
-   // private MyThread myThread;
-    private String cookie;
+public class RealTimeDataFragment extends BaseFragment {
     private boolean bb = true;
-
     private DrawChart chart;
-    private Handler mHandler;
     private View view;
-    private  String url;
+    private String url;
     private ExpandableListView eLvParameter;
     private String modelID;
-    private String jsonString ;
     private RealTimeBroadCase realTimeBroadCase;
-    private  List<Bean> totallist = new ArrayList<Bean>();  //分类
+    private List<Bean> totallist = new ArrayList<Bean>();  //分类
     private List<DataDisplayActBean> real_totallist = new ArrayList<>();//实时数据
     private Map<String, List<ChildInfo>> map;
     private List<String> parent;
@@ -87,20 +85,22 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
     private RealTimeExpandableAdapter adapter;
 
     private ProgressDialog progressDialog;
-    private List<Map<String,String>> ml = new ArrayList<Map<String,String>>();
+    private List<Map<String, String>> ml = new ArrayList<Map<String, String>>();
     private CustomEmptyView mCustomEmptyView;
+
+    private OkHttpHelper okHttpHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
-            //view = inflater.inflate(R.layout.datadiaplayact, null);
-            view = inflater.inflate(R.layout.fragment_real,null);
+
+            view = inflater.inflate(R.layout.fragment_real, null);
             initView(view);
             initData();
             setListen();
             realTimeBroadCase = new RealTimeBroadCase();
             getActivity().registerReceiver(realTimeBroadCase, new IntentFilter("com.kawakp.demingliu.jinandemo.activity.MainActivity"));
-        }else {
+        } else {
             ViewGroup parent = (ViewGroup) view.getParent();
             if (parent != null) {
                 parent.removeView(view);
@@ -112,16 +112,17 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
     @Override
     protected void initView(View view) {
 
-        eLvParameter = getView(view,R.id.rel_e_lv_parameter);
-        mCustomEmptyView = getView(view,R.id.empty_layout);
+        eLvParameter = getView(view, R.id.rel_e_lv_parameter);
+        mCustomEmptyView = getView(view, R.id.empty_layout);
+
+        okHttpHelper = OkHttpHelper.getInstance(getContext());
     }
 
     @Override
     protected void initData() {
-        cookie = SharedPerferenceHelper.getCookie(getActivity());
         modelID = SharedPerferenceHelper.getDeviceModelId(getActivity());
-        url = Path.PARAM_LIST+"plcDataModelId="+modelID+"&type=MONITOR";
-        Log.d("TAG",url);
+        url = Path.PARAM_LIST + "plcDataModelId=" + modelID + "&type=MONITOR";
+        Log.d("TAG", url);
         if (getActivity() != null) {
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage("正在加载,请稍候...");
@@ -130,7 +131,6 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
         }
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -138,46 +138,28 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
 
     @Override
     protected void setListen() {
-       // lin_back.setOnClickListener(this);
-
         eLvParameter.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
-               // Log.d("REAL",totallist.get(i).getElements().get(i1).getDisplayName());
-                Log.d("REAL",map.get(parent.get(i)).get(i1).getValue()+map.get(parent.get(i)).get(i1).getName());
+                Log.d("REAL", map.get(parent.get(i)).get(i1).getValue() + map.get(parent.get(i)).get(i1).getName());
                 //能否获取到key
-                if (parent.get(i).equals("温度参数")){
-                    showPopWindow(map.get(parent.get(i)).get(i1).getName(),i,i1);
-                }else if (parent.get(i).equals("压力参数")){
-                    showPopWindow2(map.get(parent.get(i)).get(i1).getName(),i,i1);
-                }else if (parent.get(i).equals("液位参数")){
-                    showPopWindow3(map.get(parent.get(i)).get(i1).getName(),i,i1);
-                }else {
-                    showPopWindow4(map.get(parent.get(i)).get(i1).getName(),i,i1);
+                if (parent.get(i).equals("温度参数")) {
+                    showPopWindow(map.get(parent.get(i)).get(i1).getName(), i, i1);
+                } else if (parent.get(i).equals("压力参数")) {
+                    showPopWindow2(map.get(parent.get(i)).get(i1).getName(), i, i1);
+                } else if (parent.get(i).equals("液位参数")) {
+                    showPopWindow3(map.get(parent.get(i)).get(i1).getName(), i, i1);
+                } else {
+                    showPopWindow4(map.get(parent.get(i)).get(i1).getName(), i, i1);
                 }
-
-
                 return false;
             }
         });
     }
 
-
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-
-        }
-    }
-
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        Log.d("TAG","=========================");
         getActivity().unregisterReceiver(realTimeBroadCase);
 
     }
@@ -189,7 +171,7 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
         getActivity().registerReceiver(realTimeBroadCase, new IntentFilter("com.kawakp.demingliu.jinandemo.activity.MainActivity"));
     }
 
-    private void showPopWindow(String s,final int parentID, final int childID) {
+    private void showPopWindow(String s, final int parentID, final int childID) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.chart_popuwindow, null);
         final PopupWindow pw = new PopupWindow(view,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -218,34 +200,21 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if (map.size()>0 && parent.size() >0) {
+                if (map.size() > 0 && parent.size() > 0) {
                     chart.setY(Double.parseDouble(map.get(parent.get(parentID)).get(childID).getValue()));
-
-
-                }else {
+                } else {
                     chart.setY(0);
                 }
             }
         };
-        timer.schedule(timerTask,0,1000);
-
-       /* timerProcess = new TimerProcess();
-        mHandler = new Handler();
-        mHandler.post(timerProcess);*/
-
+        timer.schedule(timerTask, 0, 1000);
         img_cancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // handler.removeCallbacks(timerProcess);
                 timer.cancel();
                 pw.dismiss();
-
             }
         });
-
-
-
-
     }
 
     private void showPopWindow2(String s, final int parentID, final int childID) {
@@ -276,33 +245,23 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if (map.size()>0 && parent.size() > 0) {
+                if (map.size() > 0 && parent.size() > 0) {
                     chart.setY(Double.parseDouble(map.get(parent.get(parentID)).get(childID).getValue()));
-                }else {
+                } else {
                     chart.setY((double) 0);
                 }
             }
         };
-        timer.schedule(timerTask,0,1000);
-
-        /*timerProcess = new TimerProcess();
-        mHandler = new Handler();
-        mHandler.post(timerProcess);*/
-
+        timer.schedule(timerTask, 0, 1000);
         img_cancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // handler.removeCallbacks(timerProcess);
                 timer.cancel();
                 pw.dismiss();
-
             }
         });
-
-
-
-
     }
+
     private void showPopWindow3(String s, final int parentID, final int childID) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.chart_p3, null);
         final PopupWindow pw = new PopupWindow(view,
@@ -331,34 +290,24 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if (map.size() >0 && parent.size() >0) {
+                if (map.size() > 0 && parent.size() > 0) {
                     chart.setY(Double.parseDouble(map.get(parent.get(parentID)).get(childID).getValue()));
 
-                }else {
+                } else {
                     chart.setY((double) 0);
                 }
             }
         };
-        timer.schedule(timerTask,0,1000);
-
-        /*timerProcess = new TimerProcess();
-        mHandler = new Handler();
-        mHandler.post(timerProcess);*/
-
+        timer.schedule(timerTask, 0, 1000);
         img_cancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // handler.removeCallbacks(timerProcess);
                 timer.cancel();
                 pw.dismiss();
-
             }
         });
-
-
-
-
     }
+
     private void showPopWindow4(String s, final int parentID, final int childID) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.chart_p4, null);
         final PopupWindow pw = new PopupWindow(view,
@@ -387,96 +336,71 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if (map.size()>0 && parent.size() >0) {
-                    chart.setY(Double.parseDouble(map.get(parent.get(parentID)).get(childID).getValue())+30);
-                }else {
+                if (map.size() > 0 && parent.size() > 0) {
+                    chart.setY(Double.parseDouble(map.get(parent.get(parentID)).get(childID).getValue()) + 30);
+                } else {
                     chart.setY((double) 0);
                 }
             }
         };
-        timer.schedule(timerTask,0,1000);
-
-        /*timerProcess = new TimerProcess();
-        mHandler = new Handler();
-        mHandler.post(timerProcess);*/
-
+        timer.schedule(timerTask, 0, 1000);
         img_cancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // handler.removeCallbacks(timerProcess);
                 timer.cancel();
                 pw.dismiss();
 
             }
         });
-
-
-
-
     }
 
-    @Override
-    public void onNetResult(int flag, String jsonResult) {
-        jsonString = jsonResult;
 
-    }
-
-    @Override
-    public void onNetComplete(int flag) {
-        if (jsonString != null){
-            switch (flag){
-                case Config.FLAG_ZERO:
-                    Log.d("TAG",jsonString);
-                    JSONArray jsonArray = JSON.parseArray(jsonString);
-                    List<Bean> list = JSON.parseArray(jsonArray.toString(),Bean.class);
-                    totallist.clear();
-                    totallist.addAll(list);
-                    map = new HashMap<>();
-                    parent = new ArrayList<>();
-                    getParentChildDatas();
-
-                    eLvParameter.setGroupIndicator(null);
-
-                    adapter = new RealTimeExpandableAdapter(map, parent, getActivity());
-                    eLvParameter.setAdapter(adapter);
-                    bb = false;
-                    //展开每一item
-                    for (int i = 0; i < adapter.getGroupCount(); i++) {
-                        eLvParameter.expandGroup(i);
-                    }
-
-                    if (progressDialog != null) {
-                        progressDialog.dismiss();
-                    }
-
-                    break;
-            }
-        }
-
-    }
-
-    private class RealTimeBroadCase extends BroadcastReceiver{
+    private class RealTimeBroadCase extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("com.kawakp.demingliu.jinandemo.activity.MainActivity")) {
-
-
-               //   获取key
+                //   获取key
                 List<MyElementBean> elist = getKeyDatas(intent);
                 //  通过key，获取值
                 getValueDatas(intent, elist);
 
-                if (ml.size()>0) {
+                if (ml.size() > 0) {
                     hideEmptyView();
                     if (isAdded()) {
-                        if(bb){
+                        if (bb) {
                             //是否是第一次请求，是就请求分类信息，不是就不请求
-                            NetController netController = new NetController();
+
                             if (getActivity() != null) {
-                                netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, Config.FLAG_ZERO, RealTimeDataFragment.this, cookie, null, null);
+                                progressDialog.dismiss();
+                                okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
+
+                                    @Override
+                                    public void onSuccess(Response response, String s) {
+                                        JSONArray jsonArray = JSON.parseArray(s);
+                                        List<Bean> list = JSON.parseArray(jsonArray.toString(), Bean.class);
+                                        totallist.clear();
+                                        totallist.addAll(list);
+                                        map = new HashMap<>();
+                                        parent = new ArrayList<>();
+                                        getParentChildDatas();
+                                        eLvParameter.setGroupIndicator(null);
+                                        adapter = new RealTimeExpandableAdapter(map, parent, getActivity());
+                                        eLvParameter.setAdapter(adapter);
+                                        bb = false;
+                                        //展开每一item
+                                        for (int i = 0; i < adapter.getGroupCount(); i++) {
+                                            eLvParameter.expandGroup(i);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Response response, int code, Exception e) {
+
+                                    }
+                                });
                             }
-                        }else {
+                        } else {
                             getParentChildDatas();
                             //展开每一item
                             for (int i = 0; i < adapter.getGroupCount(); i++) {
@@ -486,7 +410,7 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
                             adapter.notifyDataSetChanged();
                         }
                     }
-                }else {
+                } else {
                     progressDialog.dismiss();
                     initEmptyView();
 
@@ -494,7 +418,6 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
 
             }
         }
-
 
 
     }
@@ -515,21 +438,21 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
         JSONObject fo = JSON.parseObject(intent.getStringExtra("MESSAGE"));
         JSONObject fobj = fo.getJSONObject("elementTable");
         JSONArray fa = fobj.getJSONArray("elements");
-        return JSON.parseArray(fa.toString(),MyElementBean.class);
+        return JSON.parseArray(fa.toString(), MyElementBean.class);
     }
+
     private void getValueDatas(Intent intent, List<MyElementBean> elist) {
         try {
             // TODO: 2016/10/14 获取实时数据，通过filenam得到key
             org.json.JSONObject object = new org.json.JSONObject(intent.getStringExtra("MESSAGE"));
             org.json.JSONArray array = object.getJSONArray("list");
-
             ml.clear();
-            for (int i=0;i<array.length();i++){
+            for (int i = 0; i < array.length(); i++) {
                 org.json.JSONObject o = array.getJSONObject(i);
-                for (int j = 0;j<elist.size();j++) {
-                    Map<String,String> m = new HashMap<String,String>();
+                for (int j = 0; j < elist.size(); j++) {
+                    Map<String, String> m = new HashMap<String, String>();
                     if (o.opt(elist.get(j).getFieldName()) != null) {
-                        m.put(elist.get(j).getFieldName(), o.opt(elist.get(j).getFieldName())+"");
+                        m.put(elist.get(j).getFieldName(), o.opt(elist.get(j).getFieldName()) + "");
                         ml.add(m);
                     }
 
@@ -554,14 +477,13 @@ public class RealTimeDataFragment extends BaseFragment implements View.OnClickLi
                 String displayName = totallist.get(i).getElements().get(j).getDisplayName();
                 String address = totallist.get(i).getElements().get(j).getDefaultAddress();
 
-                for (int k=0;k<ml.size();k++) {
+                for (int k = 0; k < ml.size(); k++) {
                     Set set = ml.get(k).entrySet();
-                    for(Iterator iter = set.iterator(); iter.hasNext();)
-                    {
-                        Map.Entry entry = (Map.Entry)iter.next();
-                        String key = (String)entry.getKey();
+                    for (Iterator iter = set.iterator(); iter.hasNext(); ) {
+                        Map.Entry entry = (Map.Entry) iter.next();
+                        String key = (String) entry.getKey();
                         if (totallist.get(i).getElements().get(j).getFieldName().equals(key)) {
-                            ChildInfo childInfo = new ChildInfo(displayName, ml.get(k).get(key),totallist.get(i).getElements().get(j).getUnit());
+                            ChildInfo childInfo = new ChildInfo(displayName, ml.get(k).get(key), totallist.get(i).getElements().get(j).getUnit());
                             childInfos.add(childInfo);
                         }
                     }

@@ -23,6 +23,9 @@ import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.bean.DeviceListBean;
 import com.kawakp.demingliu.jinandemo.bean.OrgBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
+import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
 import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.service.ServiceHelper;
@@ -40,26 +43,28 @@ import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Response;
+
 /**
  * Created by deming.liu on 2016/8/10.
  */
-public class DeviceListActivity extends BaseActivity implements View.OnClickListener, IOnNetResultListener {
+public class DeviceListActivity extends BaseActivity implements View.OnClickListener {
     private LinearLayout lin_back;
     private ListView listView;
     private List<OrgBean> totallist = new ArrayList<OrgBean>();
-    private String cookie;
+
     private String orgId;
-    private ProgressDialog progressDialog;
+
     int page = 1;
-    int pageSize = 100;
-    private String jsonString = null;
+    int pageSize = 1000;
+
 
     private TreeListViewAdapter mAdapter;
     private List<Bean> mDatas = new ArrayList<Bean>();
 
     private String device_url;
 
-
+    private OkHttpHelper okHttpHelper;
 
 
     @Override
@@ -76,35 +81,112 @@ public class DeviceListActivity extends BaseActivity implements View.OnClickList
     protected void initView() {
         lin_back = getView(R.id.lin_back);
         listView = getView(R.id.id_tree);
+
+        okHttpHelper = OkHttpHelper.getInstance(DeviceListActivity.this);
     }
 
     @Override
     protected void initData() {
-
-        cookie = SharedPerferenceHelper.getCookie(DeviceListActivity.this);
         orgId = SharedPerferenceHelper.getOrgId(DeviceListActivity.this);
-        if (cookie != null) {
-            //TODO 判断服务是否在运行
-            if (!ServiceHelper.isServiceWork(getApplicationContext(), Config.INTENTFILTER)) {
-                Intent intent = new Intent(getApplicationContext(), WarnService.class);
-                startService(intent);
+        //TODO 判断服务是否在运行
+        if (!ServiceHelper.isServiceWork(getApplicationContext(), Config.INTENTFILTER)) {
+            Intent intent = new Intent(getApplicationContext(), WarnService.class);
+            startService(intent);
+        }
+        device_url = Path.DEVICELIST_PATH + "&pageNum=" + page + "&pageSize=" + pageSize;
+        //获取组织结构url
+        String url = "http://kawakp.chinclouds.com:60034/userconsle/orgs" + orgId;
+        Log.d("cookie", url + " ------------------ " + orgId + "  " + device_url);
+        //获取组织结构列表
+        getOrg(url);
+    }
+
+    /**
+     * 获取组织结构
+     *
+     * @param url
+     */
+    private void getOrg(String url) {
+        okHttpHelper.get(url, new SpotsCallBack<String>(DeviceListActivity.this) {
+
+            @Override
+            public void onSuccess(Response response, String s) {
+
+                JSONArray array = JSON.parseArray(s);
+                List<OrgBean> list = JSON.parseArray(array.toString(), OrgBean.class);
+                totallist.addAll(list);
+                for (int i = 0; i < totallist.size(); i++) {
+                    mDatas.add(new Bean(list.get(i).getId(), list.get(i).getParentId(), list.get(i).getName(), null, null, null));
+                }
+                //获取设备列表
+                getDeviceList();
             }
 
-            device_url = Path.DEVICELIST_PATH + "&pageNum=" + page + "&pageSize=" + pageSize;
-           //获取组织结构url
-            String url = "http://kawakp.chinclouds.com:60034/userconsle/orgs"+orgId;
+            @Override
+            public void onError(Response response, int code, Exception e) {
+                Log.e("DeviceList","code = "+code + " "+e.toString());
+            }
+        });
+    }
 
-            Log.d("cookie", url + " ------------------ " + orgId+"  "+device_url);
-            progressDialog = new ProgressDialog(DeviceListActivity.this);
-            progressDialog.setMessage(getString(R.string.load));
-            progressDialog.show();
-            //获取组织结构列表
-            NetController netController = new NetController();
-            netController.requestNet(this, url, NetController.HttpMethod.GET, 0, DeviceListActivity.this, cookie, null, null);
-        }
+    /**
+     * 获取设备类别加到组织结构上
+     */
+    private void getDeviceList() {
+        okHttpHelper.get(device_url, new SimpleCallback<String>(DeviceListActivity.this) {
 
+            @Override
+            public void onSuccess(Response response, String s) {
+                JSONObject jsonObject = JSON.parseObject(s);
+                JSONArray array = jsonObject.getJSONArray("list");
+                List<DeviceListBean> list = JSON.parseArray(array.toString(), DeviceListBean.class);
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getOrgId() != null) {
+                        for (int j = 0; j < totallist.size(); j++) {
+                            if (totallist.get(j).getId().equals(list.get(i).getOrgId())) {
+                                //将设备数据绑定到组织结构上
+                                mDatas.add(new Bean(list.get(i).getId() + "", list.get(i).getOrgId(), list.get(i).getName(), list.get(i).getPlcDataModelId(), list.get(i).getId(), list.get(i).getOnlineStatus()));
+                            }
+                        }
+                    }
 
+                }
 
+                try {
+                    mAdapter = new SimpleTreeAdapter<Bean>(listView, DeviceListActivity.this, mDatas, 0);
+                    mAdapter.setOnTreeNodeClickListener(new TreeListViewAdapter.OnTreeNodeClickListener() {
+                        @Override
+                        public void onClick(Node node, int position) {
+                            if (node.isLeaf()) {
+                                if (node.getDeviceId() != null && node.getPlcDataModelId() != null) {
+                                    //保存deviceModelId
+                                    boolean b = SharedPerferenceHelper.saveDeviceModelId(DeviceListActivity.this, node.getPlcDataModelId(), node.getDeviceId());
+                                    if (b) {
+                                        Intent intent = new Intent(DeviceListActivity.this, MainActivity.class);
+                                        intent.putExtra("TITLE", node.getName());
+                                        startActivity(intent);
+                                    }
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "暂无设备",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d("ERR", e.toString());
+                }
+                listView.setAdapter(mAdapter);
+            }
+
+            @Override
+            public void onError(Response response, int code, Exception e) {
+                Log.e("DeviceList","code = "+code + " "+e.toString());
+            }
+        });
     }
 
     @Override
@@ -154,100 +236,13 @@ public class DeviceListActivity extends BaseActivity implements View.OnClickList
         });
     }
 
-    @Override
-    public void onNetResult(int flag, String jsonResult) {
-        jsonString = jsonResult;
-    }
-
-    @Override
-    public void onNetComplete(int flag) {
-        switch (flag){
-            case 0:
-                if (jsonString == null || jsonString.equals("-1")) {
-                    IToast.showToast(DeviceListActivity.this, "获取数据失败，请检查网络");
-                } else {
-                   // Log.d("TAG","设备列表："+jsonString);
-                    JSONArray array = JSON.parseArray(jsonString);
-                    List<OrgBean> list = JSON.parseArray(array.toString(),OrgBean.class);
-
-                    totallist.addAll(list);
-                    for (int i = 0;i<totallist.size();i++){
-                        mDatas.add(new Bean(list.get(i).getId(),list.get(i).getParentId(),list.get(i).getName(),null,null,null));
-                    }
-
-                    //获取设备列表
-                    NetController netController = new NetController();
-                    netController.requestNet(this,device_url , NetController.HttpMethod.GET, 1, DeviceListActivity.this, cookie, null, null);
-
-
-                }
-                break;
-            case 1:
-                JSONObject jsonObject = JSON.parseObject(jsonString);
-                JSONArray array = jsonObject.getJSONArray("list");
-                List<DeviceListBean> list = JSON.parseArray(array.toString(), DeviceListBean.class);
-                for (int i = 0 ;i<list.size();i++){
-                    if (list.get(i).getOrgId() != null ) {
-                        for (int j = 0; j < totallist.size(); j++) {
-                            if (totallist.get(j).getId().equals(list.get(i).getOrgId())) {
-                                //将设备数据绑定到组织结构上
-                                mDatas.add(new Bean(list.get(i).getId() + "", list.get(i).getOrgId(), list.get(i).getName(),list.get(i).getPlcDataModelId(),list.get(i).getId(),list.get(i).getOnlineStatus()));
-                            }
-                        }
-                    }
-
-                }
-
-
-                try {
-                    mAdapter = new SimpleTreeAdapter<Bean>(listView, DeviceListActivity.this, mDatas, 0);
-                    mAdapter.setOnTreeNodeClickListener(new TreeListViewAdapter.OnTreeNodeClickListener()
-                    {
-                        @Override
-                        public void onClick(Node node, int position)
-                        {
-                            if (node.isLeaf()) {
-
-                                Log.d("TAG", node.getName() + " " + node.getPlcDataModelId() + "  " + node.getDeviceId());
-
-                                if (node.getDeviceId() != null && node.getPlcDataModelId() != null) {
-                                    //保存deviceModelId
-                                    boolean b = SharedPerferenceHelper.saveDeviceModelId(DeviceListActivity.this, node.getPlcDataModelId(), node.getDeviceId());
-
-                                    if (b) {
-                                        Intent intent = new Intent(DeviceListActivity.this, MainActivity.class);
-                                        intent.putExtra("TITLE", node.getName());
-                                        startActivity(intent);
-                                    }
-                                }else {
-                                    Toast.makeText(getApplicationContext(), "暂无设备",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-
-                    });
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.d("ERR",e.toString());
-                }
-
-
-                listView.setAdapter(mAdapter);
-
-                progressDialog.dismiss();
-                break;
-        }
-
-    }
 
     //点击两次退出
     private long firstTime = 0;
+
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch(keyCode)
-        {
+        switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 long secondTime = System.currentTimeMillis();
                 if (secondTime - firstTime > 2000) { //如果两次按键时间间隔大于2秒，则不退出

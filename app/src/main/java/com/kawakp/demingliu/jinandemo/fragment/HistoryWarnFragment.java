@@ -24,6 +24,9 @@ import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.adapter.HistoryWarnAdapter;
 import com.kawakp.demingliu.jinandemo.bean.HistoryWarnBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
+import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
 import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.MyListView;
@@ -43,11 +46,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import okhttp3.Response;
+
 
 /**
  * Created by deming.liu on 2016/7/5.
  */
-public class HistoryWarnFragment extends BaseFragment implements View.OnClickListener, PullToRefreshScrollView.OnScrollListener, IOnNetResultListener {
+public class HistoryWarnFragment extends BaseFragment implements View.OnClickListener, PullToRefreshScrollView.OnScrollListener{
     private LinearLayout lin_start_time;
     private LinearLayout lin_end_time;
     private TextView tv_start_time;
@@ -66,8 +71,7 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
     private int page = 1;
     private int pageSize = 10;
     private int status = 0;//0-未处理，1-人工处理，2-远程处理，3-已忽略
-    private String cookie;
-    private String jsonString = null;
+    private OkHttpHelper okHttpHelper;
     private int FLAG_ZERO = 0;
     private int FLAG_ONE = 1;
     private int FLAG_TWO = 2;
@@ -116,6 +120,7 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
         tv_end_time = getView(view, R.id.textView_end_time);
         listView = getView(view, R.id.listView_search);
         btn_search = getView(view, R.id.button_search);
+        okHttpHelper = OkHttpHelper.getInstance(getActivity());
 
         myScrollView.setOnScrollListener(this);
         //上拉、下拉设定
@@ -138,8 +143,25 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
                 //TODO 下拉刷新
                 page = 1;
                 String url = Path.WARN_DATA + "pageNum=" + page + "&pageSize=" + pageSize + "&status=" + status;
-                NetController netController = new NetController();
-                netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, FLAG_ONE, HistoryWarnFragment.this, cookie, null, null);
+
+                okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
+
+                    @Override
+                    public void onSuccess(Response response, String s) {
+                        JSONObject object1 = JSON.parseObject(s);
+                        JSONArray array1 = object1.getJSONArray("list");
+                        List<HistoryWarnBean> list1 = JSON.parseArray(array1.toString(), HistoryWarnBean.class);
+                        totallist.clear();
+                        totallist.addAll(list1);
+                        adapter.notifyDataSetChanged();
+                        myScrollView.onRefreshComplete();//刷新完成
+                    }
+
+                    @Override
+                    public void onError(Response response, int code, Exception e) {
+
+                    }
+                });
 
             }
 
@@ -148,8 +170,24 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
                 //TODO 上啦加载
                 page++;
                 String url = Path.WARN_DATA + "pageNum=" + page + "&pageSize=" + pageSize + "&status=" + status;
-                NetController netController = new NetController();
-                netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, FLAG_TWO, HistoryWarnFragment.this, cookie, null, null);
+                okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
+
+                    @Override
+                    public void onSuccess(Response response, String s) {
+                        JSONObject object2 = JSON.parseObject(s);
+                        JSONArray array2 = object2.getJSONArray("list");
+                        List<HistoryWarnBean> list2 = JSON.parseArray(array2.toString(), HistoryWarnBean.class);
+                        totallist.addAll(list2);
+                        //adapter.notifyDataSetChanged();
+                        listView.setAdapter(adapter);
+                        myScrollView.onRefreshComplete();//刷新完成
+                    }
+
+                    @Override
+                    public void onError(Response response, int code, Exception e) {
+
+                    }
+                });
 
             }
         });
@@ -158,15 +196,37 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
     @Override
     protected void initData() {
         getCurrentTime();
-        cookie = SharedPerferenceHelper.getCookie(getActivity());
+
         String url = Path.WARN_DATA + "pageNum=" + page + "&pageSize=" + pageSize + "&status=" + status;
         if (getActivity() != null) {
             progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage("正在加载,请稍候...");
             progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
-            NetController netController = new NetController();
-            netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, FLAG_ZERO, this, cookie, null, null);
+            //NetController netController = new NetController();
+            //netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, FLAG_ZERO, this, cookie, null, null);
+            okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
+
+                @Override
+                public void onSuccess(Response response, String s) {
+                    JSONObject jsonObject = JSON.parseObject(s);
+                    JSONArray array = jsonObject.getJSONArray("list");
+                    List<HistoryWarnBean> list = JSON.parseArray(array.toString(), HistoryWarnBean.class);
+                    totallist.clear();
+                    totallist.addAll(list);
+                    //构建适配器
+                    adapter = new HistoryWarnAdapter(totallist, getActivity());
+                    listView.setAdapter(adapter);
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
+                    }
+                }
+
+                @Override
+                public void onError(Response response, int code, Exception e) {
+
+                }
+            });
         }
 
     }
@@ -203,8 +263,25 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
                     String endTime = URLEncoder.encode(tv_end_time.getText().toString() + ":00", "utf-8");
                     String url = Path.WARN_DATA + "pageNum=" + page + "&pageSize=" + 100 + "&fromDate=" + startTime + "&toDate=" + endTime + "&status=" + status;
                     Log.d("TAG", url);
-                    NetController netController = new NetController();
-                    netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, 3, this, cookie, null, null);
+                    //NetController netController = new NetController();
+                   // netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, 3, this, cookie, null, null);
+                    okHttpHelper.get(url, new SpotsCallBack<String>(getActivity()) {
+
+                        @Override
+                        public void onSuccess(Response response, String s) {
+                            JSONObject jsonObject3 = JSON.parseObject(s);
+                            JSONArray array3 = jsonObject3.getJSONArray("list");
+                            List<HistoryWarnBean> list3 = JSON.parseArray(array3.toString(), HistoryWarnBean.class);
+                            totallist.clear();
+                            totallist.addAll(list3);
+                            listView.setAdapter(adapter);
+                        }
+
+                        @Override
+                        public void onError(Response response, int code, Exception e) {
+
+                        }
+                    });
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -383,59 +460,9 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
         mTopLayout.layout(0, mBuyLayout2ParentTop, mTopLayout.getWidth(), mBuyLayout2ParentTop + mTopLayout.getHeight());
     }
 
-    @Override
-    public void onNetResult(int flag, String jsonResult) {
-        jsonString = jsonResult;
-        // Log.d("TAG","历史报警= "+jsonString);
-    }
 
-    @Override
-    public void onNetComplete(int flag) {
-        if (jsonString != null && !jsonString.equals("-1")) {
-            switch (flag) {
-                case 0: //第一次请求
-                    JSONObject jsonObject = JSON.parseObject(jsonString);
-                    JSONArray array = jsonObject.getJSONArray("list");
-                    List<HistoryWarnBean> list = JSON.parseArray(array.toString(), HistoryWarnBean.class);
-                    totallist.clear();
-                    totallist.addAll(list);
-                    //构建适配器
-                    adapter = new HistoryWarnAdapter(totallist, getActivity());
-                    listView.setAdapter(adapter);
-                    if (progressDialog != null) {
-                        progressDialog.dismiss();
-                    }
-                    break;
-                case 1:
-                    JSONObject object1 = JSON.parseObject(jsonString);
-                    JSONArray array1 = object1.getJSONArray("list");
-                    List<HistoryWarnBean> list1 = JSON.parseArray(array1.toString(), HistoryWarnBean.class);
-                    totallist.clear();
-                    totallist.addAll(list1);
-                    adapter.notifyDataSetChanged();
-                    myScrollView.onRefreshComplete();//刷新完成
-                    break;
-                case 2:
-                    JSONObject object2 = JSON.parseObject(jsonString);
-                    JSONArray array2 = object2.getJSONArray("list");
-                    List<HistoryWarnBean> list2 = JSON.parseArray(array2.toString(), HistoryWarnBean.class);
-                    totallist.addAll(list2);
-                    //adapter.notifyDataSetChanged();
-                    listView.setAdapter(adapter);
-                    myScrollView.onRefreshComplete();//刷新完成
-                    break;
-                case 3:
-                    JSONObject jsonObject3 = JSON.parseObject(jsonString);
-                    JSONArray array3 = jsonObject3.getJSONArray("list");
-                    List<HistoryWarnBean> list3 = JSON.parseArray(array3.toString(), HistoryWarnBean.class);
-                    totallist.clear();
-                    totallist.addAll(list3);
-                    listView.setAdapter(adapter);
-                    break;
-            }
-        }
 
-    }
+
 
     @Override
     public void onPause() {

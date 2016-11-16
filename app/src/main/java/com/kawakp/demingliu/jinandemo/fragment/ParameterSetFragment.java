@@ -30,6 +30,9 @@ import com.kawakp.demingliu.jinandemo.bean.ChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
 import com.kawakp.demingliu.jinandemo.bean.MyElementBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
+import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
 import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
@@ -47,16 +50,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import okhttp3.Response;
+
 
 /**
  * Created by deming.liu on 2016/7/5.
  */
-public class ParameterSetFragment extends BaseFragment implements IOnNetResultListener {
+public class ParameterSetFragment extends BaseFragment {
     private ExpandableListView eLvParameter;
-    private String cookie;
     private String modelID;
     private String url;
-    private String jsonString;
     private List<Bean> totallist = new ArrayList<Bean>();
     private PopupWindow pw;
     private List<DataDisplayActBean> totallist_data = new ArrayList<DataDisplayActBean>();
@@ -74,6 +77,7 @@ public class ParameterSetFragment extends BaseFragment implements IOnNetResultLi
     private List<Map<String, String>> ml = new ArrayList<Map<String, String>>();
     //private Map<String,String>  m = new HashMap<>();
     private CustomEmptyView mCustomEmptyView;
+    private OkHttpHelper okHttpHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -98,11 +102,11 @@ public class ParameterSetFragment extends BaseFragment implements IOnNetResultLi
     protected void initView(View view) {
         eLvParameter = getView(view, R.id.e_lv_parameter);
         mCustomEmptyView = getView(view, R.id.empty_layout);
+        okHttpHelper = OkHttpHelper.getInstance(getActivity());
     }
 
     @Override
     protected void initData() {
-        cookie = SharedPerferenceHelper.getCookie(getActivity());
         modelID = SharedPerferenceHelper.getDeviceModelId(getActivity());
 
         //获取分类
@@ -160,8 +164,45 @@ public class ParameterSetFragment extends BaseFragment implements IOnNetResultLi
                 Log.d("TAG", "------------------------------" + url);
                 String json = "{\"value\":" + editText.getText().toString() + "}";
 
-                NetController netController = new NetController();
-                netController.requestNet(getActivity(), url, NetController.HttpMethod.PUT, 1, ParameterSetFragment.this, cookie, json, null);
+               // NetController netController = new NetController();
+               // netController.requestNet(getActivity(), url, NetController.HttpMethod.PUT, 1, ParameterSetFragment.this, cookie, json, null);
+                okHttpHelper.put(url, json, new SimpleCallback<String>(getActivity()) {
+
+                    @Override
+                    public void onSuccess(Response response, String s) {
+                        if (s.contains("'error'")){
+                            IToast.showToast(getActivity(),"设置失败");
+
+                        }else {
+                            try {
+                                org.json.JSONObject object = new org.json.JSONObject(s);
+                                IToast.showToast(getActivity(),object.getString("success"));
+                                pw.dismiss();
+                                if (getActivity() != null) {
+                                    progressDialog1 = new ProgressDialog(getActivity());
+                                    progressDialog1.setMessage("请稍候...");
+                                    progressDialog1.setCanceledOnTouchOutside(false);
+                                    progressDialog1.show();
+                                    Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressDialog1.dismiss();
+                                        }
+                                    }, 4000);
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response response, int code, Exception e) {
+
+                    }
+                });
 
 
             }
@@ -174,97 +215,8 @@ public class ParameterSetFragment extends BaseFragment implements IOnNetResultLi
         });
     }
 
-    @Override
-    public void onNetResult(int flag, String jsonResult) {
-
-        jsonString = jsonResult;
-    }
-
-    @Override
-    public void onNetComplete(int flag) {
-        if (jsonString != null) {
-            switch (flag) {
-                case Config.FLAG_ZERO:
-                    Log.d("FLAG_ZERO", jsonString);
-
-                    JSONArray jsonArray = JSON.parseArray(jsonString);
-                    List<Bean> list = JSON.parseArray(jsonArray.toString(), Bean.class);
-                    totallist.clear();
-                    totallist.addAll(list);
-                    map = new HashMap<>();
-                    parent = new ArrayList<>();
-                    getParentChildDatas();
 
 
-                    eLvParameter.setGroupIndicator(null);
-                    adapter = new ExpandableListViewAdapter(map, parent, getActivity());
-                    eLvParameter.setAdapter(adapter);
-                    bb = false;
-                    //展开每一item
-                    openItem();
-                    if (progressDialog != null) {
-                        progressDialog.dismiss();
-                    }
-
-
-                    break;
-                case Config.FLAG_ONE:
-                   // Log.d("ParameterSetFragment","参数设定返回=="+jsonString);
-                    if (jsonString.contains("'error'")){
-                        IToast.showToast(getActivity(),"设置失败");
-
-                    }else {
-                        try {
-                            org.json.JSONObject object = new org.json.JSONObject(jsonString);
-                            IToast.showToast(getActivity(),object.getString("success"));
-                            pw.dismiss();
-                            if (getActivity() != null) {
-                                progressDialog1 = new ProgressDialog(getActivity());
-                                progressDialog1.setMessage("请稍候...");
-                                progressDialog1.setCanceledOnTouchOutside(false);
-                                progressDialog1.show();
-                                Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //重新请求一下数据
-                                      /*  NetController netController1 = new NetController();
-                                        if (getActivity() != null) {
-                                            netController1.requestNet(getActivity(), Path.REALTIME_DATA_PATH, NetController.HttpMethod.GET, Config.FLAG_TWO, ParameterSetFragment.this, cookie, null, null);
-                                        }*/
-                                        progressDialog1.dismiss();
-                                    }
-                                }, 8000);
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
-                case Config.FLAG_TWO:
-                    JSONObject object = JSON.parseObject(jsonString);
-                    JSONArray array = object.getJSONArray("list");
-                    Log.d("FLAG_TWO", array.toString());
-                    List<DataDisplayActBean> list1 = JSON.parseArray(array.toString(), DataDisplayActBean.class);
-                    totallist_data.clear();
-                    totallist_data.addAll(list1);
-                    if (totallist_data.size() > 0) {
-                        // 获取分类信息
-                        NetController netController = new NetController();
-                        if (getActivity() != null) {
-                            netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, Config.FLAG_ZERO, ParameterSetFragment.this, cookie, null, null);
-                        }
-                    }
-                    break;
-
-
-            }
-
-
-        }
-
-    }
 
     @Override
     public void onPause() {
@@ -297,9 +249,34 @@ public class ParameterSetFragment extends BaseFragment implements IOnNetResultLi
                         if (bb) {
                             // 获取分类信息
                             if (isAdded()) {
-                                NetController netController = new NetController();
                                 if (getActivity() != null) {
-                                    netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, Config.FLAG_ZERO, ParameterSetFragment.this, cookie, null, null);
+                                    okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
+
+                                        @Override
+                                        public void onSuccess(Response response, String s) {
+                                            JSONArray jsonArray = JSON.parseArray(s);
+                                            List<Bean> list = JSON.parseArray(jsonArray.toString(), Bean.class);
+                                            totallist.clear();
+                                            totallist.addAll(list);
+                                            map = new HashMap<>();
+                                            parent = new ArrayList<>();
+                                            getParentChildDatas();
+                                            eLvParameter.setGroupIndicator(null);
+                                            adapter = new ExpandableListViewAdapter(map, parent, getActivity());
+                                            eLvParameter.setAdapter(adapter);
+                                            bb = false;
+                                            //展开每一item
+                                            openItem();
+                                            if (progressDialog != null) {
+                                                progressDialog.dismiss();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(Response response, int code, Exception e) {
+
+                                        }
+                                    });
                                 }
                             }
                         } else {

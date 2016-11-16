@@ -12,9 +12,13 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.utils.HttpUtils;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
+
+import okhttp3.Response;
 
 
 /**
@@ -22,9 +26,10 @@ import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
  */
 public class RealTimeDataService extends Service {
     private boolean flag = true;
-    private String cookie;
+
     private String url;
     private String deviceID;
+    private OkHttpHelper okHttpHelper;
 
     public interface MyCallBack {
         void callBackMessage(String message);
@@ -41,13 +46,14 @@ public class RealTimeDataService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        //获取cookie
-        cookie = SharedPerferenceHelper.getCookie(getApplicationContext());
+
         deviceID = SharedPerferenceHelper.getDeviceId(getApplicationContext());
         url = "http://kawakp.chinclouds.com:60034/userconsle/devices/" + deviceID + "/elementTables/jngn_t_sjxs/datas?pageNum=1&pageSize=1";
-        if (cookie != null) {
-            new Thread(new MyThread()).start();
-        }
+        okHttpHelper = OkHttpHelper.getInstance(getApplicationContext());
+        new Thread(new MyThread()).start();
+
+
+
     }
 
     @Override
@@ -76,16 +82,25 @@ public class RealTimeDataService extends Service {
 
         @Override
         public void run() {
-            while (flag) {
+
+
+            while (flag){
                 try {
                     Thread.sleep(2000);
-                    byte[] bytes = HttpUtils.loadByteFromURL1(url, cookie);
-                    if (bytes != null) {
-                        String result = new String(bytes);
-                        if (callBack != null) {
-                            callBack.callBackMessage(result);
+                    okHttpHelper.get(url, new SimpleCallback<String>(getApplicationContext()) {
+
+                        @Override
+                        public void onSuccess(Response response, String s) {
+                            if (callBack != null) {
+                                callBack.callBackMessage(s);
+                            }
                         }
-                    }
+
+                        @Override
+                        public void onError(Response response, int code, Exception e) {
+
+                        }
+                    });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

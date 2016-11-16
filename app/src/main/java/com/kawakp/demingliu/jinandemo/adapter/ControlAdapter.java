@@ -16,6 +16,9 @@ import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.bean.ChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.ControlChildInfo;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
+import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
 import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
@@ -27,22 +30,25 @@ import org.json.JSONException;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.Response;
+
 /**
  * Created by deming.liu on 2016/10/15.
  */
-public class ControlAdapter extends BaseExpandableListAdapter implements IOnNetResultListener {
+public class ControlAdapter extends BaseExpandableListAdapter  {
     private Map<String, List<ControlChildInfo>> map;
     private List<String> parent;
     private Context context;
     private String deviceID;
-    private String cookie;
+    private OkHttpHelper okHttpHelper;
+    private ProgressDialog progressDialog;
 
     public ControlAdapter(Map<String, List<ControlChildInfo>> map, List<String> parent, Context context) {
         this.context = context;
         this.map = map;
         this.parent = parent;
         deviceID = SharedPerferenceHelper.getDeviceId(context);
-        cookie = SharedPerferenceHelper.getCookie(context);
+       okHttpHelper = OkHttpHelper.getInstance(context);
     }
 
 
@@ -142,10 +148,12 @@ public class ControlAdapter extends BaseExpandableListAdapter implements IOnNetR
                         public void onClick(View view) {
                             String url_manul = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json_manul = "{\"value\":" + 1 + "}";
-                            NetController netController_manul = new NetController();
-                            netController_manul.requestNet(context, url_manul, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_manul, null);
+
                             Log.d("ada", url_manul + "　" + json_manul);
+                            doPutData(url_manul, json_manul);
                         }
+
+
                     });
 
                     rb_auto.setOnClickListener(new View.OnClickListener() {
@@ -153,8 +161,9 @@ public class ControlAdapter extends BaseExpandableListAdapter implements IOnNetR
                         public void onClick(View view) {
                             String url_auto = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json_auto = "{\"value\":" + 0 + "}";
-                            NetController netController_auto = new NetController();
-                            netController_auto.requestNet(context, url_auto, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_auto, null);
+                            //NetController netController_auto = new NetController();
+                           // netController_auto.requestNet(context, url_auto, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_auto, null);
+                            doPutData(url_auto, json_auto);
                             Log.d("ada", url_auto + "　" + json_auto);
                         }
                     });
@@ -178,9 +187,10 @@ public class ControlAdapter extends BaseExpandableListAdapter implements IOnNetR
                         public void onClick(View view) {
                             String url_manul = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json_manul = "{\"value\":" + 1 + "}";
-                            NetController netController_manul = new NetController();
-                            netController_manul.requestNet(context, url_manul, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_manul, null);
+                           // NetController netController_manul = new NetController();
+                           // netController_manul.requestNet(context, url_manul, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_manul, null);
                             Log.d("ada", url_manul + "　" + json_manul);
+                            doPutData(url_manul, json_manul);
                         }
                     });
 
@@ -189,9 +199,10 @@ public class ControlAdapter extends BaseExpandableListAdapter implements IOnNetR
                         public void onClick(View view) {
                             String url_auto = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json_auto = "{\"value\":" + 0 + "}";
-                            NetController netController_auto = new NetController();
-                            netController_auto.requestNet(context, url_auto, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_auto, null);
+                           // NetController netController_auto = new NetController();
+                            //netController_auto.requestNet(context, url_auto, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_auto, null);
                             Log.d("ada", url_auto + "　" + json_auto);
+                            doPutData(url_auto, json_auto);
                         }
                     });
 
@@ -218,15 +229,17 @@ public class ControlAdapter extends BaseExpandableListAdapter implements IOnNetR
                             String url1 = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json1 = "{\"value\":" + 1 + "}";
                             // Log.d("FLAG_TWO",url1+"-----------"+json1);
-                            NetController netController1 = new NetController();
-                            netController1.requestNet(context, url1, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json1, null);
+                           // NetController netController1 = new NetController();
+                           // netController1.requestNet(context, url1, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json1, null);
+                            doPutData(url1, json1);
                         } else {
                             String url1 = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json1 = "{\"value\":" + 0 + "}";
                             // Log.d("FLAG_TWO",url1+"-----------"+json1+"     "+csb1.isChecked());
                             checkBox.setChecked(false);
-                            NetController netController1 = new NetController();
-                            netController1.requestNet(context, url1, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json1, null);
+                            //NetController netController1 = new NetController();
+                            //netController1.requestNet(context, url1, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json1, null);
+                            doPutData(url1, json1);
                         }
                     }
                 });
@@ -246,59 +259,49 @@ public class ControlAdapter extends BaseExpandableListAdapter implements IOnNetR
     }
 
 
-    private String jsonString;
-    private ProgressDialog progressDialog2;
 
-    @Override
-    public void onNetResult(int flag, String jsonResult) {
-        jsonString = jsonResult;
-    }
+    private void doPutData(String url_manul, String json_manul) {
+        okHttpHelper.put(url_manul, json_manul, new SimpleCallback<String>(context) {
 
-    @Override
-    public void onNetComplete(int flag) {
-        Log.d("ada", jsonString);
-        if (jsonString.contains("'error'")) {
-            IToast.showToast(context, "设置失败");
+            @Override
+            public void onSuccess(Response response, String s) {
+                if (s.contains("'error'")) {
+                    IToast.showToast(context, "设置失败");
 
-        } else {
-            try {
-                org.json.JSONObject object1 = new org.json.JSONObject(jsonString);
-                IToast.showToast(context, object1.getString("success"));
-                //重新请求一下数据
-                if (context != null) {
-                    progressDialog2 = new ProgressDialog(context);
-                    progressDialog2.setMessage("请稍候...");
-                    progressDialog2.setCanceledOnTouchOutside(false);
-                    progressDialog2.show();
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                   /* //传递一个告诉成功
-                        if (callBack != null){
-                            callBack.callback(true);
-                        }*/
-                            progressDialog2.dismiss();
+                } else {
+                    try {
+                        org.json.JSONObject object1 = new org.json.JSONObject(s);
+                        IToast.showToast(context, object1.getString("success"));
+                        //重新请求一下数据
+                        if (context != null) {
+                            progressDialog = new ProgressDialog(context);
+                            progressDialog.setMessage("请稍候...");
+                            progressDialog.setCanceledOnTouchOutside(false);
+                            progressDialog.show();
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    progressDialog.dismiss();
+                                }
+                            }, 4000);
                         }
-                    }, 8000);
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
-        }
+
+            @Override
+            public void onError(Response response, int code, Exception e) {
+
+            }
+        });
     }
 
-    /*private MyCallBack callBack;
 
 
-
-    public void setCallBack(MyCallBack callBack) {
-        this.callBack = callBack;
-    }
-
-    private interface MyCallBack{
-        void callback(boolean flag);
-    }*/
 }

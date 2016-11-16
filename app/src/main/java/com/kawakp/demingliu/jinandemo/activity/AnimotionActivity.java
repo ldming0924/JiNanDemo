@@ -20,6 +20,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
+import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
 import com.kawakp.demingliu.jinandemo.utils.Animatiom;
 import com.kawakp.demingliu.jinandemo.utils.HttpUtils;
 import com.kawakp.demingliu.jinandemo.utils.MyAnimation;
@@ -32,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -49,11 +53,12 @@ public class AnimotionActivity extends Activity implements View.OnClickListener 
     private MyAnimation animatiom;
     private boolean flag = true;
     private List<DataDisplayActBean> totallist = new ArrayList<DataDisplayActBean>();
-    private String cookie;
+
     private LinearLayout lin_back;
     private MyThread myThread;
     private String url;
     private String deviceID;
+    private OkHttpHelper okHttpHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,14 +88,14 @@ public class AnimotionActivity extends Activity implements View.OnClickListener 
         animotion_water = (TextView) findViewById(R.id.animotion_water);
         lin_back = (LinearLayout) findViewById(R.id.lin_back);
 
-
+        okHttpHelper = OkHttpHelper.getInstance(AnimotionActivity.this);
 
         animatiom= (MyAnimation) findViewById(R.id.anition);
         animatiom.start();
         flag = true;
     }
     private void initData(){
-        cookie = SharedPerferenceHelper.getCookie(AnimotionActivity.this);
+
         deviceID = SharedPerferenceHelper.getDeviceId(AnimotionActivity.this);
         url = "http://kawakp.chinclouds.com:60034/userconsle/devices/"+deviceID+"/elementTables/jngn_t_sjxs/datas?pageNum=1&pageSize=1";
         if (myThread == null) {
@@ -116,14 +121,21 @@ public class AnimotionActivity extends Activity implements View.OnClickListener 
             while (flag) {
                 try {
                     Thread.sleep(2000);
-                    byte[] bytes = HttpUtils.loadByteFromURL1(url,cookie);
-                    if (bytes != null) {
-                        String result = new String(bytes);
-                        Message message = Message.obtain();
-                        message.what = 10001;
-                        message.obj = result;
-                        handler.sendMessage(message);
-                    }
+                    okHttpHelper.get(url, new SimpleCallback<String>(AnimotionActivity.this) {
+                        @Override
+                        public void onSuccess(Response response, String s) {
+                            Message message = Message.obtain();
+                            message.what = 10001;
+                            message.obj = s;
+                            handler.sendMessage(message);
+                        }
+
+                        @Override
+                        public void onError(Response response, int code, Exception e) {
+
+                        }
+                    });
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -35,6 +35,8 @@ import com.kawakp.demingliu.jinandemo.bean.ControlChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
 import com.kawakp.demingliu.jinandemo.bean.MyElementBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
 import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
@@ -53,16 +55,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import okhttp3.Response;
+
 
 /**
  * Created by deming.liu on 2016/7/5.
  */
 public class ControlSetFragment extends BaseFragment implements  IOnNetResultListener {
-    // private LinearLayout lin_anim;
-    private String cookie;
+    private OkHttpHelper okHttpHelper;
+
     private String modelID;
     private String url;
-    private String jsonString;
+
 
     private String deviceID;
     private TextView t1, t2, t3, t4;
@@ -114,12 +118,12 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
         mCustomEmptyView = getView(view, R.id.empty_layout);
 
         customExpandableListView = getView(view,R.id.customExpandableListView);
-
+        okHttpHelper = OkHttpHelper.getInstance(getActivity());
     }
 
     @Override
     protected void initData() {
-        cookie = SharedPerferenceHelper.getCookie(getActivity());
+
         modelID = SharedPerferenceHelper.getDeviceModelId(getActivity());
         deviceID = SharedPerferenceHelper.getDeviceId(getActivity());
 
@@ -142,39 +146,17 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
 
     @Override
     public void onNetResult(int flag, String jsonResult) {
-        jsonString = jsonResult;
+       // jsonString = jsonResult;
 
     }
 
     @Override
     public void onNetComplete(int flag) {
-        if (jsonString != null) {
+        /*if (jsonString != null) {
             switch (flag) {
                 case Config.FLAG_ZERO:
                    // Log.d("TAG",jsonString);
-                    JSONArray jsonArray = JSON.parseArray(jsonString);
-                    List<Bean> list = JSON.parseArray(jsonArray.toString(),Bean.class);
-                    totallist.clear();
-                    totallist.addAll(list);
-                    map = new HashMap<>();
-                    parent = new ArrayList<>();
-                    map.clear();
-                    parent.clear();
 
-                    setData();
-
-                    customExpandableListView.setGroupIndicator(null);
-
-                    adapter = new ControlAdapter(map, parent, getActivity());
-                    customExpandableListView.setAdapter(adapter);
-                    bb = false;
-                    //展开每一item
-                    for (int i = 0; i < adapter.getGroupCount(); i++) {
-                        customExpandableListView.expandGroup(i);
-                    }
-                    if (progressDialog != null) {
-                        progressDialog.dismiss();
-                    }
 
 
 
@@ -230,7 +212,7 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
             }
 
 
-        }
+        }*/
     }
 
 
@@ -273,9 +255,43 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
                         if (bb) {
                             // 获取分类信息
                             if (isAdded()) {
-                                NetController netController = new NetController();
+
                                 if (getActivity() != null) {
-                                    netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, Config.FLAG_ZERO, ControlSetFragment.this, cookie, null, null);
+                                   // netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, Config.FLAG_ZERO, ControlSetFragment.this, cookie, null, null);
+                                    okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
+
+                                        @Override
+                                        public void onSuccess(Response response, String s) {
+                                            JSONArray jsonArray = JSON.parseArray(s);
+                                            List<Bean> list = JSON.parseArray(jsonArray.toString(),Bean.class);
+                                            totallist.clear();
+                                            totallist.addAll(list);
+                                            map = new HashMap<>();
+                                            parent = new ArrayList<>();
+                                            map.clear();
+                                            parent.clear();
+
+                                            setData();
+
+                                            customExpandableListView.setGroupIndicator(null);
+
+                                            adapter = new ControlAdapter(map, parent, getActivity());
+                                            customExpandableListView.setAdapter(adapter);
+                                            bb = false;
+                                            //展开每一item
+                                            for (int i = 0; i < adapter.getGroupCount(); i++) {
+                                                customExpandableListView.expandGroup(i);
+                                            }
+                                            if (progressDialog != null) {
+                                                progressDialog.dismiss();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(Response response, int code, Exception e) {
+
+                                        }
+                                    });
                                 }
                             }
                         }else {
@@ -370,62 +386,7 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
             }
         }
     }
- /*   private void setLight(Intent intent) {
-            JSONObject object = JSON.parseObject(intent.getStringExtra("MESSAGE"));
-            JSONArray array = object.getJSONArray("list");
-            List<DataDisplayActBean> list = JSON.parseArray(array.toString(),DataDisplayActBean.class);
-      *//*  List<Map<String,Integer>> list = new ArrayList<>();
-        try {
-            org.json.JSONObject object = new org.json.JSONObject(intent.getStringExtra("MESSAGE"));
-            org.json.JSONArray array = object.getJSONArray("list");
-            for (int i = 0;i<array.length();i++){
-                Map<String,Integer> map = new HashMap<>();
-                org.json.JSONObject o = array.getJSONObject(i);
-                map.put("RUN_XHV1",o.getInt("RUN_XHV1"));
-                map.put("RUN_XHV2",o.getInt("RUN_XHV2"));
-                map.put("RUN_BSV1",o.getInt("RUN_BSV1"));
-                map.put("RUN_BSV2",o.getInt("RUN_BSV2"));
-                list.add(map);
-            }
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*//*
-       *//* for (int i = 0;i<list.size();i++) {
-            //显示灯
-            if (list.get(0).get("RUN_XHV1") == 0) {
-                t1.setBackgroundColor(getResources().getColor(R.color.red));
-
-            } else if (list.get(0).get("RUN_XHV1") == 1) {
-                t1.setBackgroundColor(getResources().getColor(R.color.blue));
-            } else {
-                t1.setBackgroundColor(getResources().getColor(R.color.green));
-            }
-            if (list.get(0).get("RUN_XHV2") == 0) {
-                t3.setBackgroundColor(getResources().getColor(R.color.red));
-
-            } else if (list.get(0).get("RUN_XHV2") == 1) {
-                t3.setBackgroundColor(getResources().getColor(R.color.blue));
-            } else {
-                t3.setBackgroundColor(getResources().getColor(R.color.green));
-            }
-            if (list.get(0).get("RUN_BSV1") == 0) {
-                t2.setBackgroundColor(getResources().getColor(R.color.red));
-            } else if (list.get(0).get("RUN_BSV1") == 1) {
-                t2.setBackgroundColor(getResources().getColor(R.color.blue));
-            } else {
-                t2.setBackgroundColor(getResources().getColor(R.color.green));
-            }
-            if (list.get(0).get("RUN_BSV2") == 0) {
-                t4.setBackgroundColor(getResources().getColor(R.color.red));
-
-            } else if (list.get(0).get("RUN_BSV2") == 1) {
-                t4.setBackgroundColor(getResources().getColor(R.color.blue));
-            } else {
-                t4.setBackgroundColor(getResources().getColor(R.color.green));
-            }
-        }*//*
-    }*/
 
 
     private void setData() {

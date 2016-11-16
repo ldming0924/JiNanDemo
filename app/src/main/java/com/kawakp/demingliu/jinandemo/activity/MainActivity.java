@@ -1,8 +1,5 @@
 package com.kawakp.demingliu.jinandemo.activity;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,7 +12,6 @@ import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,23 +22,14 @@ import com.jauker.widget.BadgeView;
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.fragment.ControlSetFragment;
-import com.kawakp.demingliu.jinandemo.fragment.ParamFragment;
 import com.kawakp.demingliu.jinandemo.fragment.ParameterSetFragment;
 import com.kawakp.demingliu.jinandemo.fragment.HistoryWarnFragment;
 import com.kawakp.demingliu.jinandemo.fragment.RealTimeDataFragment;
-import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
-import com.kawakp.demingliu.jinandemo.net.NetController;
-import com.kawakp.demingliu.jinandemo.receiver.NotificationReceiver;
 import com.kawakp.demingliu.jinandemo.service.RealTimeDataService;
-import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-
-public class MainActivity extends BaseActivity implements View.OnClickListener, IOnNetResultListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     private LinearLayout lin1, lin2, lin3, lin4;
     private ImageView img1, img2, img3, img4;
     private FragmentManager manager;
@@ -53,9 +40,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private int update = 0;
     private BadgeView badgeView;
     private WarmReceive warmReceive;
-    private String cookie;
-    private String jsonString;
-    private String time;
     private LinearLayout lin_back;
     private LinearLayout lin_anim;
     private TextView title;
@@ -113,7 +97,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     protected void initData() {
         Intent intent = new Intent(MainActivity.this, RealTimeDataService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
-        cookie = SharedPerferenceHelper.getCookie(MainActivity.this);
     }
 
     @Override
@@ -125,7 +108,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         lin_back.setOnClickListener(this);
         lin_anim.setOnClickListener(this);
-
 
     }
 
@@ -143,12 +125,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             realTimeDataService.setCallBack(new RealTimeDataService.MyCallBack() {
                 @Override
                 public void callBackMessage(String message) {
-                    // Log.d("TAG","Main=============="+message);
+
                     //发送广播
                     if (message != null) {
                         Intent intent = new Intent("com.kawakp.demingliu.jinandemo.activity.MainActivity");
                         intent.putExtra("MESSAGE", message);
                         sendBroadcast(intent);
+
                     }
 
                 }
@@ -195,8 +178,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 // TODO: 2016/9/21  刷新问题，换成ParamFragment，布局是写死的
                 ParameterSetFragment parameterSetFragment = new ParameterSetFragment();
                 setFragment(parameterSetFragment);
-               /* ParamFragment paramFragment = new ParamFragment();
-                setFragment(paramFragment);*/
                 lin_anim.setVisibility(View.GONE);
                 img1.setImageResource(R.drawable.data_btn);
                 img2.setImageResource(R.drawable.control_btn);
@@ -228,32 +209,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         transaction.commit();
     }
 
-    @Override
-    public void onNetResult(int flag, String jsonResult) {
-        jsonString = jsonResult;
-    }
-
-    @Override
-    public void onNetComplete(int flag) {
-        if (jsonString != null) {
-            Log.d("WARM", jsonString);
-            JSONObject object = null;
-            try {
-                object = new JSONObject(jsonString);
-                JSONArray array = object.getJSONArray("list");
-                JSONObject obj = array.getJSONObject(0);
-                if (!obj.getString("createDate").equals(time)) {
-                    //showNotification(MainActivity.this, obj.getString("displayName"), obj.getString("createDate"));
-                    //time = obj.getString("createDate");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-        }
-    }
-
 
     public class WarmReceive extends BroadcastReceiver {
 
@@ -274,27 +229,5 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    private void showNotification(Context context, String message, String time) {
-        Intent broadcastIntent = new Intent(context, NotificationReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.
-                getBroadcast(context, Config.REQUEST_CODE, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        builder.setContentTitle("设备报警")
-                .setContentText(time + "   " + message)
-                .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.image_device)
-                .setAutoCancel(true);
-
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = builder.build();
-        notification.defaults = Notification.DEFAULT_SOUND;//系统默认提示音
-//        notification.defaults |= Notification.DEFAULT_VIBRATE;//震动
-//        long[] vibrate = {0,100,200,300};
-//        notification.vibrate = vibrate;
-
-        manager.notify(Config.NOTIFY_ID, notification);
-
-    }
 
 }

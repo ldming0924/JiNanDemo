@@ -17,6 +17,8 @@ import android.widget.EditText;
 
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
 import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
@@ -29,15 +31,15 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.Response;
+
 /**
  * Created by deming.liu on 2016/8/5.
  */
-public class LoginActivity extends BaseActivity implements View.OnClickListener, IOnNetResultListener {
+public class LoginActivity extends BaseActivity implements View.OnClickListener{
     private EditText userEdt;
     private EditText passwordEdt;
     private Button loginBtn;
-    private String jsonString;
-    private ProgressDialog progressDialog;
     private CheckBox remember_password;
     private CheckBox auto_login;
     private String s1 = null; //记住密码
@@ -126,58 +128,57 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                 } else if (TextUtils.isEmpty(passwordEdt.getText().toString())) {
                     IToast.showToast(LoginActivity.this, "请输入密码");
                 } else {
-                    progressDialog = new ProgressDialog(LoginActivity.this);
-                    progressDialog.setMessage("正在登录,请稍候...");
-                    progressDialog.setCanceledOnTouchOutside(false);
-                    progressDialog.show();
-                    Map<String, String> map = new HashMap<String, String>();
+
+                    Map<String, Object> map = new HashMap<String, Object>();
                     map.put("username", userEdt.getText().toString());
                     map.put("password", passwordEdt.getText().toString());
-                    NetController netController = new NetController();
-                    netController.requestNet(LoginActivity.this, Path.LOGIN_PATH, NetController.HttpMethod.POST, Config.FLAG_ZERO, this, null, null, map);
+
+                    OkHttpHelper okHttpHelper = OkHttpHelper.getInstance(LoginActivity.this);
+                    okHttpHelper.post(Path.LOGIN_PATH, map, new SpotsCallBack<String>(LoginActivity.this) {
+
+                        @Override
+                        public void onSuccess(Response response, String s) {
+                            if (s == null ) {
+                                IToast.showToast(LoginActivity.this, "登录失败，请检查网络");
+
+                            } else {
+                                JSONObject object = null;
+                                try {
+                                    object = new JSONObject(s);
+                                    if (s.contains("\"error\"")) {
+                                        IToast.showToast(LoginActivity.this, object.getString("error"));
+
+                                    } else {
+                                        String username = object.getString("username");
+                                        boolean b = SharedPerferenceHelper.saveUserMessage(LoginActivity.this, username, passwordEdt.getText().toString());
+                                        boolean bb = SharedPerferenceHelper.saveOrgId(LoginActivity.this,object.getString("orgId"));
+                                        if (b && bb) {
+                                            Intent intent_Login = new Intent(LoginActivity.this, DeviceListActivity.class);
+                                            startActivity(intent_Login);
+
+
+                                            finish();
+                                        } else {
+                                            IToast.showToast(LoginActivity.this, "登录失败");
+                                        }
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }
+
+                        @Override
+                        public void onError(Response response, int code, Exception e) {
+                            Log.d("TAG",e.toString());
+                        }
+                    });
                 }
 
                 break;
         }
     }
 
-    @Override
-    public void onNetResult(int flag, String jsonResult) {
-        Log.d("TAG", jsonResult + "======登录数据返回=====");
-        jsonString = jsonResult;
 
-    }
-
-    @Override
-    public void onNetComplete(int flag) {
-        if (jsonString == null || jsonString.equals("-1")) {
-            IToast.showToast(LoginActivity.this, "登录失败，请检查网络");
-            progressDialog.dismiss();
-        } else {
-            JSONObject object = null;
-            try {
-                object = new JSONObject(jsonString);
-                if (jsonString.contains("\"error\"")) {
-                    IToast.showToast(LoginActivity.this, object.getString("error"));
-                    progressDialog.dismiss();
-                } else {
-                    String username = object.getString("username");
-                    boolean b = SharedPerferenceHelper.saveUserMessage(LoginActivity.this, username, passwordEdt.getText().toString());
-                    boolean bb = SharedPerferenceHelper.saveOrgId(LoginActivity.this,object.getString("orgId"));
-                    if (b && bb) {
-                        Intent intent_Login = new Intent(LoginActivity.this, DeviceListActivity.class);
-                        startActivity(intent_Login);
-
-                        progressDialog.dismiss();
-                        finish();
-                    } else {
-                        IToast.showToast(LoginActivity.this, "登录失败");
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
 }

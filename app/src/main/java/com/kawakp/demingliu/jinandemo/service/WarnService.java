@@ -18,6 +18,8 @@ import android.util.Log;
 
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
 import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.receiver.NotificationReceiver;
@@ -29,13 +31,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import okhttp3.Response;
+
 /**
  * Created by Administrator on 2015/9/8.
  */
 public class WarnService extends Service implements IOnNetResultListener {
 
     private boolean flag = true;
-    private String cookie;
+    private OkHttpHelper okHttpHelper;
     int total;
 
     private String json;
@@ -58,10 +62,32 @@ public class WarnService extends Service implements IOnNetResultListener {
                         intent.putExtra("TOTAL", t);
                         sendBroadcast(intent);
 
-
                         //请求报警内容
-                        NetController netController = new NetController();
-                        netController.requestNet(getApplicationContext(), Path.NEW_WARM, NetController.HttpMethod.GET, Config.FLAG_ZERO, WarnService.this, cookie, null, null);
+                        okHttpHelper.get(Path.NEW_WARM, new SimpleCallback<String>(getApplicationContext()) {
+
+                            @Override
+                            public void onSuccess(Response response, String s) {
+                                JSONObject object = null;
+                                try {
+                                    object = new JSONObject(s);
+                                    JSONArray array = object.getJSONArray("list");
+                                    JSONObject obj = array.getJSONObject(0);
+                                    if (!obj.getString("createDate").equals(time)) {
+                                        showNotification(getApplicationContext(), obj.getString("displayName"), obj.getString("createDate"));
+                                        time = obj.getString("createDate");
+
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+                            @Override
+                            public void onError(Response response, int code, Exception e) {
+
+                            }
+                        });
                     }
 
                 } catch (JSONException e) {
@@ -141,14 +167,23 @@ public class WarnService extends Service implements IOnNetResultListener {
                 total = SharedPerferenceHelper.getUpdateNum(getApplicationContext());
                 try {
                     Thread.sleep(2000);
-                    byte[] bytes = HttpUtils.loadByteFromURL1(Path.REAL_WARN, cookie);
-                    if (bytes != null) {
-                        String resulr = new String(bytes);
-                        Message message = Message.obtain();
-                        message.what = 10001;
-                        message.obj = resulr;
-                        myHandler.sendMessage(message);
-                    }
+                    okHttpHelper.get(Path.REAL_WARN, new SimpleCallback<String>(getApplicationContext()) {
+
+                        @Override
+                        public void onSuccess(Response response, String s) {
+                            Message message = Message.obtain();
+                            message.what = 10001;
+                            message.obj = s;
+                            myHandler.sendMessage(message);
+                        }
+
+                        @Override
+                        public void onError(Response response, int code, Exception e) {
+
+                        }
+                    });
+
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -163,10 +198,8 @@ public class WarnService extends Service implements IOnNetResultListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         //total = SharedPerferenceHelper.getUpdateNum(getApplicationContext());
         //获取cookie
-        cookie = SharedPerferenceHelper.getCookie(getApplicationContext());
-        if (cookie != null) {
-            new Thread(new MyThread()).start();
-        }
+        okHttpHelper = OkHttpHelper.getInstance(getApplicationContext());
+        new Thread(new MyThread()).start();
 
 
         return START_STICKY;

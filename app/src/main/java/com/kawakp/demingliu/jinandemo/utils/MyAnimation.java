@@ -109,8 +109,8 @@ public class MyAnimation extends SurfaceView implements SurfaceHolder.Callback {
         DisplayMetrics dm2 = getResources().getDisplayMetrics();//获取全屏长款尺寸
         mHeight = dm2.heightPixels;
         mWeight = dm2.widthPixels;
-//        setZOrderOnTop(true);//控件置顶
-//        getHolder().setFormat(PixelFormat.TRANSLUCENT);
+       // setZOrderOnTop(true);//控件置顶
+        //getHolder().setFormat(PixelFormat.TRANSLUCENT);
         holder = this.getHolder();
         holder.addCallback(this);
         bitmap = ((BitmapDrawable)getResources().getDrawable(R.drawable.animotion_back)).getBitmap();

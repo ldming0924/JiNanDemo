@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--  <ImageView
+      <!--<ImageView
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:scaleType="fitXY"
           android:src="@drawable/animotion_back" />-->
     <com.kawakp.demingliu.jinandemo.utils.MyAnimation
+
         android:id="@+id/anition"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

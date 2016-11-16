@@ -145,18 +145,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     public void onNetResult(int flag, String jsonResult) {
         Log.d("TAG", jsonResult + "======登录数据返回=====");
         jsonString = jsonResult;
+
     }
 
     @Override
     public void onNetComplete(int flag) {
         if (jsonString == null || jsonString.equals("-1")) {
             IToast.showToast(LoginActivity.this, "登录失败，请检查网络");
+            progressDialog.dismiss();
         } else {
             JSONObject object = null;
             try {
                 object = new JSONObject(jsonString);
                 if (jsonString.contains("\"error\"")) {
                     IToast.showToast(LoginActivity.this, object.getString("error"));
+                    progressDialog.dismiss();
                 } else {
                     String username = object.getString("username");
                     boolean b = SharedPerferenceHelper.saveUserMessage(LoginActivity.this, username, passwordEdt.getText().toString());

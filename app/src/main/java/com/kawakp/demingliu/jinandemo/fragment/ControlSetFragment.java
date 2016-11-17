@@ -35,6 +35,7 @@ import com.kawakp.demingliu.jinandemo.bean.ControlChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
 import com.kawakp.demingliu.jinandemo.bean.MyElementBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.constant.MyConstant;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
@@ -145,7 +146,7 @@ public class ControlSetFragment extends BaseFragment  {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("com.kawakp.demingliu.jinandemo.activity.MainActivity")) {
+            if (intent.getAction().equals(MyConstant.MAINACTIVITY)) {
 
                 //  TODO: 2016/10/14  获取实时数据的element 中的filename
                 JSONObject fo = JSON.parseObject(intent.getStringExtra("MESSAGE"));

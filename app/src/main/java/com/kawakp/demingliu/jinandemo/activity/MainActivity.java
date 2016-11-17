@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.jauker.widget.BadgeView;
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.constant.MyConstant;
 import com.kawakp.demingliu.jinandemo.fragment.ControlSetFragment;
 import com.kawakp.demingliu.jinandemo.fragment.ParameterSetFragment;
 import com.kawakp.demingliu.jinandemo.fragment.HistoryWarnFragment;
@@ -65,8 +66,6 @@ public class MainActivity extends BaseActivity  {
     private WarmReceive warmReceive;
 
 
-
-
     @Override
     public int setContentViewId() {
         return R.layout.activity_main;
@@ -78,9 +77,7 @@ public class MainActivity extends BaseActivity  {
         title.setText(getIntent().getStringExtra("TITLE"));
         realTimeDataFragment = new RealTimeDataFragment();
         setFragment(realTimeDataFragment);
-
         initData();
-
     }
 
     @Override
@@ -97,14 +94,10 @@ public class MainActivity extends BaseActivity  {
         unregisterReceiver(warmReceive);
     }
 
-
     protected void initData() {
         Intent intent = new Intent(MainActivity.this, RealTimeDataService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
     }
-
-
-
 
     ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -123,15 +116,12 @@ public class MainActivity extends BaseActivity  {
 
                     //发送广播
                     if (message != null) {
-                        Intent intent = new Intent("com.kawakp.demingliu.jinandemo.activity.MainActivity");
+                        Intent intent = new Intent(MyConstant.MAINACTIVITY);
                         intent.putExtra("MESSAGE", message);
                         sendBroadcast(intent);
-
                     }
-
                 }
             });
-
         }
     };
 

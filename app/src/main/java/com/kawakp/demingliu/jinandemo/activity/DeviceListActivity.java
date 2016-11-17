@@ -56,21 +56,13 @@ public class DeviceListActivity extends BaseActivity  {
     @Bind(R.id.id_tree)
      ListView listView;
     private List<OrgBean> totallist = new ArrayList<OrgBean>();
-
     private String orgId;
-
     int page = 1;
     int pageSize = 1000;
-
-
     private TreeListViewAdapter mAdapter;
     private List<Bean> mDatas = new ArrayList<Bean>();
-
     private String device_url;
-
     private OkHttpHelper okHttpHelper;
-
-
 
 
     @Override
@@ -84,7 +76,6 @@ public class DeviceListActivity extends BaseActivity  {
         initData();
     }
 
-
     public void initData() {
         orgId = SharedPerferenceHelper.getOrgId(DeviceListActivity.this);
         //TODO 判断服务是否在运行
@@ -95,7 +86,6 @@ public class DeviceListActivity extends BaseActivity  {
         device_url = Path.DEVICELIST_PATH + "&pageNum=" + page + "&pageSize=" + pageSize;
         //获取组织结构url
         String url = "http://kawakp.chinclouds.com:60034/userconsle/orgs" + orgId;
-        Log.d("cookie", url + " ------------------ " + orgId + "  " + device_url);
         //获取组织结构列表
         getOrg(url);
     }

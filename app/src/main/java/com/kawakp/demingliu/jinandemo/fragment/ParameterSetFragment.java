@@ -30,6 +30,7 @@ import com.kawakp.demingliu.jinandemo.bean.ChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
 import com.kawakp.demingliu.jinandemo.bean.MyElementBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
+import com.kawakp.demingliu.jinandemo.constant.MyConstant;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
@@ -165,9 +166,7 @@ public class ParameterSetFragment extends BaseFragment {
             public void onClick(View view) {
                 String deviceID = SharedPerferenceHelper.getDeviceId(getActivity());
                 String url = Path.DEVICE_SET + deviceID + "/elements/" + id;
-                Log.d("TAG", "------------------------------" + url);
                 String json = "{\"value\":" + editText.getText().toString() + "}";
-
                 okHttpHelper.put(url, json, new SimpleCallback<String>(getActivity()) {
 
                     @Override
@@ -216,8 +215,6 @@ public class ParameterSetFragment extends BaseFragment {
     }
 
 
-
-
     @Override
     public void onPause() {
         super.onPause();
@@ -230,19 +227,17 @@ public class ParameterSetFragment extends BaseFragment {
     public void onDestroy() {
         super.onDestroy();
         getActivity().unregisterReceiver(paramsBroadcase);
-        Log.d("TAG", "-----------------------------");
+
     }
 
     public class ParamsBroadcase extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("com.kawakp.demingliu.jinandemo.activity.MainActivity")) {
+            if (intent.getAction().equals(MyConstant.MAINACTIVITY)) {
                 //  TODO: 2016/10/14  获取实时数据的element 中的filename
                 List<MyElementBean> elist = getKeyDatas(intent);
-
                 getValueDatas(intent, elist);
-
                 if (ml.size() > 0) {
                     hideEmptyView();
                     if (isAdded()) {

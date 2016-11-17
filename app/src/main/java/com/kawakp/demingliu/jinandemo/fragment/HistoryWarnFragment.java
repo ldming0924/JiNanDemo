@@ -74,6 +74,10 @@ public class HistoryWarnFragment extends BaseFragment {
     TextView tv_end_time;
     @Bind(R.id.button_search)
     Button btn_search;
+    @Bind(R.id.materialRefreshLayout)
+    MaterialRefreshLayout mRefreshLaout;
+    @Bind(R.id.recyclerView)
+    RecyclerView recyclerView;
     private boolean flag = false;
     private PopupWindow menuWindow;
     private LayoutInflater inflater = null;
@@ -82,36 +86,18 @@ public class HistoryWarnFragment extends BaseFragment {
     private WheelView day;
     private WheelView hour;
     private WheelView mins;
-    @Bind(R.id.recyclerView)
-    RecyclerView recyclerView;
-
-
     private OkHttpHelper okHttpHelper;
-    private int FLAG_ZERO = 0;
-    private int FLAG_ONE = 1;
-    private int FLAG_TWO = 2;
-
-
     private HistoryWarnAdapter adapter;
-
     private SpotsDialog mDialog;
-
-    @Bind(R.id.materialRefreshLayout)
-    MaterialRefreshLayout mRefreshLaout;
     private View view;
-
     private int page = 1;
     private int pageSize = 10;
     private int status = 1;
-
     private int totalPage = 1;
-
     private static final int STATE_NOMAL = 0; //正常加载
     private static final int STATE_REFRESH = 1; //下拉刷新
     private static final int STATE_MORE = 2; //上拉加载
-
     private int state = STATE_NOMAL;
-
     private String url = "http://kawakp.chinclouds.com:60034/userconsle/deviceAlarms?";
     private List<WarmBean> totallist = new ArrayList<WarmBean>();
 
@@ -142,66 +128,49 @@ public class HistoryWarnFragment extends BaseFragment {
             mDialog.show();
             requestWares();
         }
-
-
     }
 
     private  void initRefreshLayout(){
-
         mRefreshLaout.setLoadMore(true);
         mRefreshLaout.setMaterialRefreshListener(new MaterialRefreshListener() {
             @Override
             public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
-
                 refreshData();
-
             }
 
             @Override
             public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
-
                 if(page <=totalPage)
                     loadMoreData();
                 else{
-//                    Toast.makeText()
                     mRefreshLaout.finishRefreshLoadMore();
                 }
             }
         });
     }
     private void requestWares(){
-
         String s = url + "pageNum=" + page + "&pageSize=" + pageSize + "&status=" + status;
-
         okHttpHelper.get(s, new SimpleCallback<MateralBean<WarmBean>>(getActivity()) {
 
             @Override
             public void onSuccess(Response response, MateralBean<WarmBean> warmBeanMateralBean) {
-
                 totalPage =warmBeanMateralBean.getPages();
-
                 totallist = warmBeanMateralBean.getList();
                 showWaresData(totallist);
             }
-
-
 
             @Override
             public void onError(Response response, int code, Exception e) {
 
             }
 
-
         });
 
     }
     private  void refreshData(){
-
         page =1;
-
         state=STATE_REFRESH;
         requestWares();
-
     }
 
     private void loadMoreData(){
@@ -213,7 +182,6 @@ public class HistoryWarnFragment extends BaseFragment {
     }
     private  void showWaresData(List<WarmBean> wares){
         switch (state){
-
             case  STATE_NOMAL:
                     mDialog.dismiss();
                 if(adapter ==null) {
@@ -225,27 +193,19 @@ public class HistoryWarnFragment extends BaseFragment {
                     adapter.clear();
                     adapter.addData(wares);
                 }
-
                 break;
-
             case STATE_REFRESH:
                 adapter.clear();
                 adapter.refreshData(wares);
-
                 recyclerView.scrollToPosition(0);
                 mRefreshLaout.finishRefresh();
                 break;
-
             case STATE_MORE:
                 adapter.loadMoreData(wares);
                 recyclerView.scrollToPosition(adapter.getDatas().size());
                 mRefreshLaout.finishRefreshLoadMore();
                 break;
-
-
         }
-
-
 
     }
 
@@ -469,11 +429,6 @@ public class HistoryWarnFragment extends BaseFragment {
         }
         return day;
     }
-
-
-
-
-
 
     @Override
     public void onPause() {

@@ -229,9 +229,7 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
                     }
                 });
 
-
                 name.setText(info.getName().toString());
-
                 break;
 
         }
@@ -242,7 +240,6 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
     public boolean isChildSelectable(int i, int i1) {
         return true;
     }
-
 
 
     private void doPutData(String url_manul, String json_manul) {
@@ -270,7 +267,6 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
                                 }
                             }, 3000);
                         }
-
 
                     } catch (JSONException e) {
                         e.printStackTrace();

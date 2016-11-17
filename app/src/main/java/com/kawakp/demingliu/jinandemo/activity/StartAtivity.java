@@ -52,10 +52,6 @@ public class StartAtivity extends BaseActivity {
         initData();
     }
 
-
-
-
-
     protected void initData() {
         SharedPreferences sharedPreferences = SharedPerferenceHelper.getUserMessage(StartAtivity.this);
         userName = sharedPreferences.getString("username", null);
@@ -63,8 +59,6 @@ public class StartAtivity extends BaseActivity {
         auto = SharedPerferenceHelper.getRememberAuto(StartAtivity.this);
 
         doLogin();
-
-
     }
 
     /**
@@ -75,7 +69,6 @@ public class StartAtivity extends BaseActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                //Log.d("Start", userName + "　" + passWord + "  " + auto);
                 if (userName == null || passWord == null || auto == null || auto.equals("false")) {
                     startActivity(new Intent(StartAtivity.this, LoginActivity.class));
                     AnimationUtil.finishActivityAnimation(StartAtivity.this);

@@ -3,6 +3,8 @@ package com.kawakp.demingliu.jinandemo.fragment;
 import android.app.ProgressDialog;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,11 +20,15 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.cjj.MaterialRefreshLayout;
+import com.cjj.MaterialRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.adapter.HistoryWarnAdapter;
 import com.kawakp.demingliu.jinandemo.bean.HistoryWarnBean;
+import com.kawakp.demingliu.jinandemo.bean.MateralBean;
+import com.kawakp.demingliu.jinandemo.bean.WarmBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
@@ -36,6 +42,7 @@ import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 import com.kawakp.demingliu.jinandemo.utils.wheelviewutlis.NumericWheelAdapter;
 import com.kawakp.demingliu.jinandemo.utils.wheelviewutlis.OnWheelScrollListener;
 import com.kawakp.demingliu.jinandemo.utils.wheelviewutlis.WheelView;
+import com.kawakp.demingliu.jinandemo.widget.DividerItemDecoration;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -46,18 +53,27 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import dmax.dialog.SpotsDialog;
 import okhttp3.Response;
 
 
 /**
  * Created by deming.liu on 2016/7/5.
  */
-public class HistoryWarnFragment extends BaseFragment implements View.OnClickListener, PullToRefreshScrollView.OnScrollListener{
-    private LinearLayout lin_start_time;
-    private LinearLayout lin_end_time;
-    private TextView tv_start_time;
-    private TextView tv_end_time;
-    private Button btn_search;
+public class HistoryWarnFragment extends BaseFragment {
+    @Bind(R.id.linearLayout_start)
+    LinearLayout lin_start_time;
+    @Bind(R.id.linearLayout_end)
+    LinearLayout lin_end_time;
+    @Bind(R.id.textView_start_time)
+    TextView tv_start_time;
+    @Bind(R.id.textView_end_time)
+    TextView tv_end_time;
+    @Bind(R.id.button_search)
+    Button btn_search;
     private boolean flag = false;
     private PopupWindow menuWindow;
     private LayoutInflater inflater = null;
@@ -66,37 +82,44 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
     private WheelView day;
     private WheelView hour;
     private WheelView mins;
-    private MyListView listView;
+    @Bind(R.id.recyclerView)
+    RecyclerView recyclerView;
 
-    private int page = 1;
-    private int pageSize = 10;
-    private int status = 0;//0-未处理，1-人工处理，2-远程处理，3-已忽略
+
     private OkHttpHelper okHttpHelper;
     private int FLAG_ZERO = 0;
     private int FLAG_ONE = 1;
     private int FLAG_TWO = 2;
 
-    private List<HistoryWarnBean> totallist = new ArrayList<HistoryWarnBean>();
+
     private HistoryWarnAdapter adapter;
 
-    private ProgressDialog progressDialog;
+    private SpotsDialog mDialog;
 
-    /**
-     * 在MyScrollView里面的布局
-     */
-    private LinearLayout mLayout;
-    /**
-     * 位于顶部的布局
-     */
-    private LinearLayout mTopLayout;
-
-    private PullToRefreshScrollView myScrollView;
+    @Bind(R.id.materialRefreshLayout)
+    MaterialRefreshLayout mRefreshLaout;
     private View view;
+
+    private int page = 1;
+    private int pageSize = 10;
+    private int status = 1;
+
+    private int totalPage = 1;
+
+    private static final int STATE_NOMAL = 0; //正常加载
+    private static final int STATE_REFRESH = 1; //下拉刷新
+    private static final int STATE_MORE = 2; //上拉加载
+
+    private int state = STATE_NOMAL;
+
+    private String url = "http://kawakp.chinclouds.com:60034/userconsle/deviceAlarms?";
+    private List<WarmBean> totallist = new ArrayList<WarmBean>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
-            view = inflater.inflate(R.layout.search_his_date_act, null);
+            view = inflater.inflate(R.layout.fragment_his_data, null);
+            ButterKnife.bind(this,view);
             initView(view);
             initData();
             setListen();
@@ -111,131 +134,129 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     protected void initView(View view) {
-        lin_start_time = getView(view, R.id.linearLayout_start);
-        lin_end_time = getView(view, R.id.linearLayout_end);
-        mLayout = getView(view, R.id.title);
-        mTopLayout = getView(view, R.id.title2);
-        myScrollView = getView(view, R.id.myScrollView);
-        tv_start_time = getView(view, R.id.textView_start_time);
-        tv_end_time = getView(view, R.id.textView_end_time);
-        listView = getView(view, R.id.listView_search);
-        btn_search = getView(view, R.id.button_search);
+        getCurrentTime();
         okHttpHelper = OkHttpHelper.getInstance(getActivity());
+        initRefreshLayout();
+        if (getActivity() != null) {
+            mDialog = new SpotsDialog(getActivity(),"拼命加载中...");
+            mDialog.show();
+            requestWares();
+        }
 
-        myScrollView.setOnScrollListener(this);
-        //上拉、下拉设定
-        myScrollView.setMode(PullToRefreshBase.Mode.BOTH);
 
-        //当布局的状态或者控件的可见性发生改变回调的接口
-        view.findViewById(R.id.parent_layout).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+    }
+
+    private  void initRefreshLayout(){
+
+        mRefreshLaout.setLoadMore(true);
+        mRefreshLaout.setMaterialRefreshListener(new MaterialRefreshListener() {
+            @Override
+            public void onRefresh(MaterialRefreshLayout materialRefreshLayout) {
+
+                refreshData();
+
+            }
 
             @Override
-            public void onGlobalLayout() {
-                //这一步很重要，使得上面的布局和下面的布局重合
-                onScroll(myScrollView.getScrollY());
+            public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
 
+                if(page <=totalPage)
+                    loadMoreData();
+                else{
+//                    Toast.makeText()
+                    mRefreshLaout.finishRefreshLoadMore();
+                }
             }
         });
+    }
+    private void requestWares(){
 
-        myScrollView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ScrollView>() {
+        String s = url + "pageNum=" + page + "&pageSize=" + pageSize + "&status=" + status;
+
+        okHttpHelper.get(s, new SimpleCallback<MateralBean<WarmBean>>(getActivity()) {
+
             @Override
-            public void onPullDownToRefresh(PullToRefreshBase<ScrollView> refreshView) {
-                //TODO 下拉刷新
-                page = 1;
-                String url = Path.WARN_DATA + "pageNum=" + page + "&pageSize=" + pageSize + "&status=" + status;
+            public void onSuccess(Response response, MateralBean<WarmBean> warmBeanMateralBean) {
 
-                okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
+                totalPage =warmBeanMateralBean.getPages();
 
-                    @Override
-                    public void onSuccess(Response response, String s) {
-                        JSONObject object1 = JSON.parseObject(s);
-                        JSONArray array1 = object1.getJSONArray("list");
-                        List<HistoryWarnBean> list1 = JSON.parseArray(array1.toString(), HistoryWarnBean.class);
-                        totallist.clear();
-                        totallist.addAll(list1);
-                        adapter.notifyDataSetChanged();
-                        myScrollView.onRefreshComplete();//刷新完成
-                    }
+                totallist = warmBeanMateralBean.getList();
+                showWaresData(totallist);
+            }
 
-                    @Override
-                    public void onError(Response response, int code, Exception e) {
 
-                    }
-                });
+
+            @Override
+            public void onError(Response response, int code, Exception e) {
 
             }
 
-            @Override
-            public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView) {
-                //TODO 上啦加载
-                page++;
-                String url = Path.WARN_DATA + "pageNum=" + page + "&pageSize=" + pageSize + "&status=" + status;
-                okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
 
-                    @Override
-                    public void onSuccess(Response response, String s) {
-                        JSONObject object2 = JSON.parseObject(s);
-                        JSONArray array2 = object2.getJSONArray("list");
-                        List<HistoryWarnBean> list2 = JSON.parseArray(array2.toString(), HistoryWarnBean.class);
-                        totallist.addAll(list2);
-                        //adapter.notifyDataSetChanged();
-                        listView.setAdapter(adapter);
-                        myScrollView.onRefreshComplete();//刷新完成
-                    }
-
-                    @Override
-                    public void onError(Response response, int code, Exception e) {
-
-                    }
-                });
-
-            }
         });
+
+    }
+    private  void refreshData(){
+
+        page =1;
+
+        state=STATE_REFRESH;
+        requestWares();
+
+    }
+
+    private void loadMoreData(){
+
+        page = ++page;
+        state = STATE_MORE;
+        requestWares();
+
+    }
+    private  void showWaresData(List<WarmBean> wares){
+        switch (state){
+
+            case  STATE_NOMAL:
+                    mDialog.dismiss();
+                if(adapter ==null) {
+                    adapter = new HistoryWarnAdapter(getActivity(), wares);
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                }
+                else{
+                    adapter.clear();
+                    adapter.addData(wares);
+                }
+
+                break;
+
+            case STATE_REFRESH:
+                adapter.clear();
+                adapter.refreshData(wares);
+
+                recyclerView.scrollToPosition(0);
+                mRefreshLaout.finishRefresh();
+                break;
+
+            case STATE_MORE:
+                adapter.loadMoreData(wares);
+                recyclerView.scrollToPosition(adapter.getDatas().size());
+                mRefreshLaout.finishRefreshLoadMore();
+                break;
+
+
+        }
+
+
+
     }
 
     @Override
     protected void initData() {
-        getCurrentTime();
-
-        String url = Path.WARN_DATA + "pageNum=" + page + "&pageSize=" + pageSize + "&status=" + status;
-        if (getActivity() != null) {
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("正在加载,请稍候...");
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.show();
-            //NetController netController = new NetController();
-            //netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, FLAG_ZERO, this, cookie, null, null);
-            okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
-
-                @Override
-                public void onSuccess(Response response, String s) {
-                    JSONObject jsonObject = JSON.parseObject(s);
-                    JSONArray array = jsonObject.getJSONArray("list");
-                    List<HistoryWarnBean> list = JSON.parseArray(array.toString(), HistoryWarnBean.class);
-                    totallist.clear();
-                    totallist.addAll(list);
-                    //构建适配器
-                    adapter = new HistoryWarnAdapter(totallist, getActivity());
-                    listView.setAdapter(adapter);
-                    if (progressDialog != null) {
-                        progressDialog.dismiss();
-                    }
-                }
-
-                @Override
-                public void onError(Response response, int code, Exception e) {
-
-                }
-            });
-        }
 
     }
 
     @Override
     protected void setListen() {
-        lin_start_time.setOnClickListener(this);
-        lin_end_time.setOnClickListener(this);
-        btn_search.setOnClickListener(this);
+
     }
 
     private void getCurrentTime() {
@@ -246,7 +267,7 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
         tv_end_time.setText(str);
     }
 
-    @Override
+    @OnClick({R.id.linearLayout_start,R.id.linearLayout_end,R.id.button_search,})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.linearLayout_start:
@@ -263,24 +284,19 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
                     String endTime = URLEncoder.encode(tv_end_time.getText().toString() + ":00", "utf-8");
                     String url = Path.WARN_DATA + "pageNum=" + page + "&pageSize=" + 100 + "&fromDate=" + startTime + "&toDate=" + endTime + "&status=" + status;
                     Log.d("TAG", url);
-                    //NetController netController = new NetController();
-                   // netController.requestNet(getActivity(), url, NetController.HttpMethod.GET, 3, this, cookie, null, null);
-                    okHttpHelper.get(url, new SpotsCallBack<String>(getActivity()) {
-
+                    state = STATE_NOMAL;
+                    okHttpHelper.get(url, new SpotsCallBack<MateralBean<WarmBean>>(getActivity()) {
                         @Override
-                        public void onSuccess(Response response, String s) {
-                            JSONObject jsonObject3 = JSON.parseObject(s);
-                            JSONArray array3 = jsonObject3.getJSONArray("list");
-                            List<HistoryWarnBean> list3 = JSON.parseArray(array3.toString(), HistoryWarnBean.class);
-                            totallist.clear();
-                            totallist.addAll(list3);
-                            listView.setAdapter(adapter);
+                        public void onSuccess(Response response, MateralBean<WarmBean> warmBeanMateralBean) {
+                            totallist = warmBeanMateralBean.getList();
+                            showWaresData(totallist);
                         }
 
                         @Override
                         public void onError(Response response, int code, Exception e) {
 
                         }
+
                     });
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -454,11 +470,6 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
         return day;
     }
 
-    @Override
-    public void onScroll(int scrollY) {
-        int mBuyLayout2ParentTop = Math.max(scrollY, mLayout.getTop());
-        mTopLayout.layout(0, mBuyLayout2ParentTop, mTopLayout.getWidth(), mBuyLayout2ParentTop + mTopLayout.getHeight());
-    }
 
 
 
@@ -467,8 +478,8 @@ public class HistoryWarnFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onPause() {
         super.onPause();
-        if (progressDialog != null) {
-            progressDialog.dismiss();
+        if (mDialog != null) {
+            mDialog.dismiss();
         }
     }
 }

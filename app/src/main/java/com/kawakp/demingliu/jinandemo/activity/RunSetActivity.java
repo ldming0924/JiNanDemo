@@ -1,5 +1,6 @@
 package com.kawakp.demingliu.jinandemo.activity;
 
+import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,7 +37,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by deming.liu on 2016/8/6.
  */
-public class RunSetActivity extends BaseActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, IOnNetResultListener {
+public class RunSetActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, IOnNetResultListener {
     private CheckSwitchButton checkSwitchButton;
     private CheckSwitchButton checkSwitchButton1;
     private CheckSwitchButton checkSwitchButton2;
@@ -64,7 +65,7 @@ public class RunSetActivity extends BaseActivity implements View.OnClickListener
         // getData();
     }
 
-    @Override
+
     protected void initView() {
 
         /*checkSwitchButton1 = getView(R.id.checkswitchButton1);
@@ -72,15 +73,15 @@ public class RunSetActivity extends BaseActivity implements View.OnClickListener
         checkSwitchButton3 = getView(R.id.checkswitchButton3);
         checkSwitchButton4 = getView(R.id.checkswitchButton4);*/
 
-        lin_back = getView(R.id.lin_back);
+        lin_back = (LinearLayout) findViewById(R.id.lin_back);
     }
 
-    @Override
+
     protected void initData() {
         cookie = SharedPerferenceHelper.getCookie(RunSetActivity.this);
     }
 
-    @Override
+
     protected void setListen() {
         lin_back.setOnClickListener(this);
         checkSwitchButton.setOnCheckedChangeListener(this);

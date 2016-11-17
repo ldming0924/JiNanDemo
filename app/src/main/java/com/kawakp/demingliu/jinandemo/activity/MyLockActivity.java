@@ -1,5 +1,6 @@
 package com.kawakp.demingliu.jinandemo.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,11 +23,11 @@ import org.json.JSONObject;
 /**
  * Created by deming.liu on 2016/8/30.
  */
-public class MyLockActivity extends BaseActivity implements IOnNetResultListener {
+public class MyLockActivity extends Activity implements IOnNetResultListener {
     private String cookie;
     private String json;
-    private TextView message;
-    private TextView time;
+     TextView message;
+     TextView time;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,8 +40,10 @@ public class MyLockActivity extends BaseActivity implements IOnNetResultListener
         setContentView(R.layout.lockact);
         initView();
         initData();
-        setListen();
+
     }
+
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -57,15 +60,15 @@ public class MyLockActivity extends BaseActivity implements IOnNetResultListener
 
     }
 
-    @Override
+
     protected void initView() {
-        message = getView(R.id.textView_message);
-        time = getView(R.id.textView_time);
+        message = (TextView) findViewById(R.id.textView_message);
+        time = (TextView) findViewById(R.id.textView_time);
 
 
     }
 
-    @Override
+
     protected void initData() {
         cookie = SharedPerferenceHelper.getCookie(MyLockActivity.this);
 
@@ -75,10 +78,7 @@ public class MyLockActivity extends BaseActivity implements IOnNetResultListener
         netController.requestNet(MyLockActivity.this, url, NetController.HttpMethod.GET, Config.FLAG_ZERO, MyLockActivity.this, cookie, null, null);
     }
 
-    @Override
-    protected void setListen() {
 
-    }
 
     @Override
     public void onNetResult(int flag, String jsonResult) {

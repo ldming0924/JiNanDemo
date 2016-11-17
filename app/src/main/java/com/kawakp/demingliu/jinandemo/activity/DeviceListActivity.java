@@ -43,14 +43,18 @@ import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.OnClick;
 import okhttp3.Response;
 
 /**
  * Created by deming.liu on 2016/8/10.
  */
-public class DeviceListActivity extends BaseActivity implements View.OnClickListener {
-    private LinearLayout lin_back;
-    private ListView listView;
+public class DeviceListActivity extends BaseActivity  {
+    @Bind(R.id.lin_back)
+     LinearLayout lin_back;
+    @Bind(R.id.id_tree)
+     ListView listView;
     private List<OrgBean> totallist = new ArrayList<OrgBean>();
 
     private String orgId;
@@ -67,26 +71,21 @@ public class DeviceListActivity extends BaseActivity implements View.OnClickList
     private OkHttpHelper okHttpHelper;
 
 
+
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.devicelistact);
-        initView();
-        initData();
-        setListen();
+    public int setContentViewId() {
+        return R.layout.devicelistact;
     }
 
     @Override
-    protected void initView() {
-        lin_back = getView(R.id.lin_back);
-        listView = getView(R.id.id_tree);
-
+    public void initViews(Bundle savedInstanceState) {
         okHttpHelper = OkHttpHelper.getInstance(DeviceListActivity.this);
+        initData();
     }
 
-    @Override
-    protected void initData() {
+
+    public void initData() {
         orgId = SharedPerferenceHelper.getOrgId(DeviceListActivity.this);
         //TODO 判断服务是否在运行
         if (!ServiceHelper.isServiceWork(getApplicationContext(), Config.INTENTFILTER)) {
@@ -133,7 +132,7 @@ public class DeviceListActivity extends BaseActivity implements View.OnClickList
      * 获取设备类别加到组织结构上
      */
     private void getDeviceList() {
-        okHttpHelper.get(device_url, new SimpleCallback<String>(DeviceListActivity.this) {
+        okHttpHelper.get(device_url, new SpotsCallBack<String>(DeviceListActivity.this) {
 
             @Override
             public void onSuccess(Response response, String s) {
@@ -189,12 +188,9 @@ public class DeviceListActivity extends BaseActivity implements View.OnClickList
         });
     }
 
-    @Override
-    protected void setListen() {
-        lin_back.setOnClickListener(this);
-    }
 
-    @Override
+
+    @OnClick(R.id.lin_back)
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.lin_back:

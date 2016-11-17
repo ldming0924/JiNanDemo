@@ -63,6 +63,9 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import dmax.dialog.SpotsDialog;
 import okhttp3.Response;
 
 
@@ -74,7 +77,10 @@ public class RealTimeDataFragment extends BaseFragment {
     private DrawChart chart;
     private View view;
     private String url;
-    private ExpandableListView eLvParameter;
+    @Bind(R.id.rel_e_lv_parameter)
+    ExpandableListView eLvParameter;
+    @Bind(R.id.empty_layout)
+    CustomEmptyView mCustomEmptyView;
     private String modelID;
     private RealTimeBroadCase realTimeBroadCase;
     private List<Bean> totallist = new ArrayList<Bean>();  //分类
@@ -84,17 +90,15 @@ public class RealTimeDataFragment extends BaseFragment {
 
     private RealTimeExpandableAdapter adapter;
 
-    private ProgressDialog progressDialog;
+    private SpotsDialog mDialog;
     private List<Map<String, String>> ml = new ArrayList<Map<String, String>>();
-    private CustomEmptyView mCustomEmptyView;
-
     private OkHttpHelper okHttpHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
-
             view = inflater.inflate(R.layout.fragment_real, null);
+            ButterKnife.bind(this,view);
             initView(view);
             initData();
             setListen();
@@ -111,10 +115,6 @@ public class RealTimeDataFragment extends BaseFragment {
 
     @Override
     protected void initView(View view) {
-
-        eLvParameter = getView(view, R.id.rel_e_lv_parameter);
-        mCustomEmptyView = getView(view, R.id.empty_layout);
-
         okHttpHelper = OkHttpHelper.getInstance(getContext());
     }
 
@@ -124,10 +124,8 @@ public class RealTimeDataFragment extends BaseFragment {
         url = Path.PARAM_LIST + "plcDataModelId=" + modelID + "&type=MONITOR";
         Log.d("TAG", url);
         if (getActivity() != null) {
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("正在加载,请稍候...");
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.show();
+            mDialog = new SpotsDialog(getActivity(),"拼命加载中...");
+            mDialog.show();
         }
     }
 
@@ -372,7 +370,7 @@ public class RealTimeDataFragment extends BaseFragment {
                             //是否是第一次请求，是就请求分类信息，不是就不请求
 
                             if (getActivity() != null) {
-                                progressDialog.dismiss();
+                                mDialog.dismiss();
                                 okHttpHelper.get(url, new SimpleCallback<String>(getActivity()) {
 
                                     @Override
@@ -411,7 +409,7 @@ public class RealTimeDataFragment extends BaseFragment {
                         }
                     }
                 } else {
-                    progressDialog.dismiss();
+                    mDialog.dismiss();
                     initEmptyView();
 
                 }

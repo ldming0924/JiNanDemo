@@ -50,6 +50,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import dmax.dialog.SpotsDialog;
 import okhttp3.Response;
 
 
@@ -57,7 +60,10 @@ import okhttp3.Response;
  * Created by deming.liu on 2016/7/5.
  */
 public class ParameterSetFragment extends BaseFragment {
-    private ExpandableListView eLvParameter;
+    @Bind(R.id.e_lv_parameter)
+    ExpandableListView eLvParameter;
+    @Bind(R.id.empty_layout)
+    CustomEmptyView mCustomEmptyView;
     private String modelID;
     private String url;
     private List<Bean> totallist = new ArrayList<Bean>();
@@ -65,8 +71,8 @@ public class ParameterSetFragment extends BaseFragment {
     private List<DataDisplayActBean> totallist_data = new ArrayList<DataDisplayActBean>();
     private ExpandableListViewAdapter adapter;
     private View view;
-    private ProgressDialog progressDialog;
-    private ProgressDialog progressDialog1;
+    private SpotsDialog mDialog;;
+    private SpotsDialog mDialog1;;
 
     private ParamsBroadcase paramsBroadcase;
 
@@ -76,13 +82,14 @@ public class ParameterSetFragment extends BaseFragment {
 
     private List<Map<String, String>> ml = new ArrayList<Map<String, String>>();
     //private Map<String,String>  m = new HashMap<>();
-    private CustomEmptyView mCustomEmptyView;
+
     private OkHttpHelper okHttpHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
             view = inflater.inflate(R.layout.parameter_setting, null);
+            ButterKnife.bind(this,view);
             initView(view);
             initData();
             setListen();
@@ -100,8 +107,7 @@ public class ParameterSetFragment extends BaseFragment {
 
     @Override
     protected void initView(View view) {
-        eLvParameter = getView(view, R.id.e_lv_parameter);
-        mCustomEmptyView = getView(view, R.id.empty_layout);
+
         okHttpHelper = OkHttpHelper.getInstance(getActivity());
     }
 
@@ -113,10 +119,8 @@ public class ParameterSetFragment extends BaseFragment {
         url = Path.PARAM_LIST + "plcDataModelId=" + modelID + "&type=PARAM";
         Log.d("TAG", url);
         if (getActivity() != null) {
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("正在加载,请稍候...");
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.show();
+            mDialog = new SpotsDialog(getActivity(),"拼命加载中...");
+            mDialog.show();
 
         }
 
@@ -164,8 +168,6 @@ public class ParameterSetFragment extends BaseFragment {
                 Log.d("TAG", "------------------------------" + url);
                 String json = "{\"value\":" + editText.getText().toString() + "}";
 
-               // NetController netController = new NetController();
-               // netController.requestNet(getActivity(), url, NetController.HttpMethod.PUT, 1, ParameterSetFragment.this, cookie, json, null);
                 okHttpHelper.put(url, json, new SimpleCallback<String>(getActivity()) {
 
                     @Override
@@ -179,17 +181,15 @@ public class ParameterSetFragment extends BaseFragment {
                                 IToast.showToast(getActivity(),object.getString("success"));
                                 pw.dismiss();
                                 if (getActivity() != null) {
-                                    progressDialog1 = new ProgressDialog(getActivity());
-                                    progressDialog1.setMessage("请稍候...");
-                                    progressDialog1.setCanceledOnTouchOutside(false);
-                                    progressDialog1.show();
+                                    mDialog1 = new SpotsDialog(getActivity(),"拼命加载中...");
+                                    mDialog1.show();
                                     Handler handler = new Handler();
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            progressDialog1.dismiss();
+                                            mDialog1.dismiss();
                                         }
-                                    }, 4000);
+                                    }, 3000);
                                 }
 
                             } catch (JSONException e) {
@@ -221,8 +221,8 @@ public class ParameterSetFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (progressDialog != null) {
-            progressDialog.dismiss();
+        if (mDialog != null) {
+            mDialog.dismiss();
         }
     }
 
@@ -267,8 +267,8 @@ public class ParameterSetFragment extends BaseFragment {
                                             bb = false;
                                             //展开每一item
                                             openItem();
-                                            if (progressDialog != null) {
-                                                progressDialog.dismiss();
+                                            if (mDialog != null) {
+                                                mDialog.dismiss();
                                             }
                                         }
 
@@ -287,7 +287,7 @@ public class ParameterSetFragment extends BaseFragment {
                         }
                     }
                 } else {
-                    progressDialog.dismiss();
+                    mDialog.dismiss();
                     initEmptyView();
                 }
 

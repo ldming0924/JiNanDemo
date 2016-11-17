@@ -31,40 +31,43 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.OnClick;
 import okhttp3.Response;
 
 /**
  * Created by deming.liu on 2016/8/5.
  */
-public class LoginActivity extends BaseActivity implements View.OnClickListener{
-    private EditText userEdt;
-    private EditText passwordEdt;
-    private Button loginBtn;
-    private CheckBox remember_password;
-    private CheckBox auto_login;
+public class LoginActivity extends BaseActivity {
+    @Bind(R.id.editText_username)
+     EditText userEdt;
+    @Bind(R.id.editText_password)
+     EditText passwordEdt;
+    @Bind(R.id.button_login)
+     Button loginBtn;
+    @Bind(R.id.checkBox_remember_password)
+     CheckBox remember_password;
+    @Bind(R.id.checkBox_auto_login)
+     CheckBox auto_login;
     private String s1 = null; //记住密码
     private String s2 = null; //自动登录
 
+
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.loginact);
-        initView();
+    public int setContentViewId() {
+        return R.layout.loginact;
+    }
+
+    @Override
+    public void initViews(Bundle savedInstanceState) {
         initData();
         setListen();
     }
 
-    @Override
-    protected void initView() {
-        userEdt = getView(R.id.editText_username);
-        passwordEdt = getView(R.id.editText_password);
-        loginBtn = getView(R.id.button_login);
-        remember_password = getView(R.id.checkBox_remember_password);
-        auto_login = getView(R.id.checkBox_auto_login);
-    }
 
-    @Override
+
+
     protected void initData() {
 
         String str1 = SharedPerferenceHelper.getRememberPwd(LoginActivity.this);
@@ -91,9 +94,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
         }
     }
 
-    @Override
+
     protected void setListen() {
-        loginBtn.setOnClickListener(this);
         //是否记住密码
         remember_password.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -118,7 +120,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
         });
     }
 
-    @Override
+    @OnClick(R.id.button_login)
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_login:

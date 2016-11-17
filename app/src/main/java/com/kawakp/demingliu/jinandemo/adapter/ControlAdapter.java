@@ -30,6 +30,7 @@ import org.json.JSONException;
 import java.util.List;
 import java.util.Map;
 
+import dmax.dialog.SpotsDialog;
 import okhttp3.Response;
 
 /**
@@ -41,7 +42,7 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
     private Context context;
     private String deviceID;
     private OkHttpHelper okHttpHelper;
-    private ProgressDialog progressDialog;
+    private SpotsDialog mDialog;
 
     public ControlAdapter(Map<String, List<ControlChildInfo>> map, List<String> parent, Context context) {
         this.context = context;
@@ -148,8 +149,6 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
                         public void onClick(View view) {
                             String url_manul = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json_manul = "{\"value\":" + 1 + "}";
-
-                            Log.d("ada", url_manul + "　" + json_manul);
                             doPutData(url_manul, json_manul);
                         }
 
@@ -161,10 +160,8 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
                         public void onClick(View view) {
                             String url_auto = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json_auto = "{\"value\":" + 0 + "}";
-                            //NetController netController_auto = new NetController();
-                           // netController_auto.requestNet(context, url_auto, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_auto, null);
                             doPutData(url_auto, json_auto);
-                            Log.d("ada", url_auto + "　" + json_auto);
+
                         }
                     });
 
@@ -187,9 +184,6 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
                         public void onClick(View view) {
                             String url_manul = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json_manul = "{\"value\":" + 1 + "}";
-                           // NetController netController_manul = new NetController();
-                           // netController_manul.requestNet(context, url_manul, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_manul, null);
-                            Log.d("ada", url_manul + "　" + json_manul);
                             doPutData(url_manul, json_manul);
                         }
                     });
@@ -199,9 +193,6 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
                         public void onClick(View view) {
                             String url_auto = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json_auto = "{\"value\":" + 0 + "}";
-                           // NetController netController_auto = new NetController();
-                            //netController_auto.requestNet(context, url_auto, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json_auto, null);
-                            Log.d("ada", url_auto + "　" + json_auto);
                             doPutData(url_auto, json_auto);
                         }
                     });
@@ -228,17 +219,11 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
                         if (checkBox.isChecked()) {  //点击后的状态
                             String url1 = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json1 = "{\"value\":" + 1 + "}";
-                            // Log.d("FLAG_TWO",url1+"-----------"+json1);
-                           // NetController netController1 = new NetController();
-                           // netController1.requestNet(context, url1, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json1, null);
                             doPutData(url1, json1);
                         } else {
                             String url1 = Path.DEVICE_SET + deviceID + "/elements/" + info.getId();
                             String json1 = "{\"value\":" + 0 + "}";
-                            // Log.d("FLAG_TWO",url1+"-----------"+json1+"     "+csb1.isChecked());
                             checkBox.setChecked(false);
-                            //NetController netController1 = new NetController();
-                            //netController1.requestNet(context, url1, NetController.HttpMethod.PUT, Config.FLAG_ONE, ControlAdapter.this, cookie, json1, null);
                             doPutData(url1, json1);
                         }
                     }
@@ -274,18 +259,16 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
                         IToast.showToast(context, object1.getString("success"));
                         //重新请求一下数据
                         if (context != null) {
-                            progressDialog = new ProgressDialog(context);
-                            progressDialog.setMessage("请稍候...");
-                            progressDialog.setCanceledOnTouchOutside(false);
-                            progressDialog.show();
+                            mDialog = new SpotsDialog(context,"拼命加载中...");
+                            mDialog.show();
                             Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
 
-                                    progressDialog.dismiss();
+                                    mDialog.dismiss();
                                 }
-                            }, 4000);
+                            }, 3000);
                         }
 
 

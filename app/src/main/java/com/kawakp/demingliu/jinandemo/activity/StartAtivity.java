@@ -40,20 +40,22 @@ public class StartAtivity extends BaseActivity {
 
     private String auto;
 
+
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.startact);
+    public int setContentViewId() {
+        return R.layout.startact;
+    }
+
+    @Override
+    public void initViews(Bundle savedInstanceState) {
         initData();
     }
 
-    @Override
-    protected void initView() {
 
-    }
 
-    @Override
+
+
     protected void initData() {
         SharedPreferences sharedPreferences = SharedPerferenceHelper.getUserMessage(StartAtivity.this);
         userName = sharedPreferences.getString("username", null);
@@ -125,10 +127,7 @@ public class StartAtivity extends BaseActivity {
         }, DELAY_TIME);
     }
 
-    @Override
-    protected void setListen() {
 
-    }
 
 
 }

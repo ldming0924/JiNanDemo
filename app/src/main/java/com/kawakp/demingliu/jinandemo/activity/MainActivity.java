@@ -28,10 +28,33 @@ import com.kawakp.demingliu.jinandemo.fragment.RealTimeDataFragment;
 import com.kawakp.demingliu.jinandemo.service.RealTimeDataService;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 
+import butterknife.Bind;
+import butterknife.OnClick;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
-    private LinearLayout lin1, lin2, lin3, lin4;
-    private ImageView img1, img2, img3, img4;
+
+public class MainActivity extends BaseActivity  {
+    @Bind(R.id.lin1)
+    LinearLayout lin1;
+    @Bind(R.id.lin2)
+    LinearLayout lin2;
+    @Bind(R.id.lin3)
+    LinearLayout lin3;
+    @Bind(R.id.lin4)
+    LinearLayout lin4;
+    @Bind(R.id.img1)
+    ImageView img1;
+    @Bind(R.id.img2)
+    ImageView img2;
+    @Bind(R.id.img3)
+    ImageView img3;
+    @Bind(R.id.img4)
+    ImageView img4;
+    @Bind(R.id.lin_back)
+    LinearLayout lin_back;
+    @Bind(R.id.lin_anim)
+    LinearLayout lin_anim;
+    @Bind(R.id.textView_title)
+    TextView title;
     private FragmentManager manager;
     private FragmentTransaction transaction;
     private RealTimeDataFragment realTimeDataFragment;
@@ -40,19 +63,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int update = 0;
     private BadgeView badgeView;
     private WarmReceive warmReceive;
-    private LinearLayout lin_back;
-    private LinearLayout lin_anim;
-    private TextView title;
+
+
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.activity_main);
+    public int setContentViewId() {
+        return R.layout.activity_main;
+    }
 
-        initView();
+    @Override
+    public void initViews(Bundle savedInstanceState) {
+        lin_anim.setVisibility(View.GONE);
+        title.setText(getIntent().getStringExtra("TITLE"));
+        realTimeDataFragment = new RealTimeDataFragment();
+        setFragment(realTimeDataFragment);
+
         initData();
-        setListen();
+
     }
 
     @Override
@@ -69,47 +97,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         unregisterReceiver(warmReceive);
     }
 
-    @Override
-    protected void initView() {
-        lin1 = (LinearLayout) findViewById(R.id.lin1);
-        lin2 = (LinearLayout) findViewById(R.id.lin2);
-        lin3 = (LinearLayout) findViewById(R.id.lin3);
-        lin4 = (LinearLayout) findViewById(R.id.lin4);
-        img1 = (ImageView) findViewById(R.id.img1);
-        img2 = (ImageView) findViewById(R.id.img2);
-        img3 = (ImageView) findViewById(R.id.img3);
-        img4 = (ImageView) findViewById(R.id.img4);
 
-        title = (TextView) findViewById(R.id.textView_title);
-        lin_back = (LinearLayout) findViewById(R.id.lin_back);
-        lin_anim = (LinearLayout) findViewById(R.id.lin_anim);
-
-        lin_anim.setVisibility(View.GONE);
-
-
-        title.setText(getIntent().getStringExtra("TITLE"));
-
-        realTimeDataFragment = new RealTimeDataFragment();
-        setFragment(realTimeDataFragment);
-    }
-
-    @Override
     protected void initData() {
         Intent intent = new Intent(MainActivity.this, RealTimeDataService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
     }
 
-    @Override
-    protected void setListen() {
-        lin1.setOnClickListener(this);
-        lin2.setOnClickListener(this);
-        lin3.setOnClickListener(this);
-        lin4.setOnClickListener(this);
 
-        lin_back.setOnClickListener(this);
-        lin_anim.setOnClickListener(this);
 
-    }
 
     ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -147,7 +142,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         unbindService(conn);
     }
 
-    @Override
+
+    @OnClick({R.id.lin_back,R.id.lin_anim,R.id.lin1,R.id.lin2,R.id.lin3,R.id.lin4})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.lin_back:

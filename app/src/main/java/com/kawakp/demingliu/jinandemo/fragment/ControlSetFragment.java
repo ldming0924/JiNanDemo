@@ -55,28 +55,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import dmax.dialog.SpotsDialog;
 import okhttp3.Response;
 
 
 /**
  * Created by deming.liu on 2016/7/5.
  */
-public class ControlSetFragment extends BaseFragment implements  IOnNetResultListener {
+public class ControlSetFragment extends BaseFragment  {
     private OkHttpHelper okHttpHelper;
-
     private String modelID;
     private String url;
-
-
     private String deviceID;
-    private TextView t1, t2, t3, t4;
+    @Bind(R.id.t1)
+    TextView t1;
+    @Bind(R.id.t2)
+    TextView t2;
+    @Bind(R.id.t3)
+    TextView t3;
+    @Bind(R.id.t4)
+    TextView t4;
+    @Bind(R.id.customExpandableListView)
+    CustomExpandableListView customExpandableListView;
+    @Bind(R.id.empty_layout)
+    CustomEmptyView mCustomEmptyView;
     private View view;
-    private ProgressDialog progressDialog;
-    private ProgressDialog progressDialog1;
-    private ProgressDialog progressDialog2;
-
+    private SpotsDialog mDialog;
     private ControlBroadcast controlBroadcast;
-
     private boolean b = true;
     private  List<Bean> totallist = new ArrayList<Bean>();
     private Map<String, List<ControlChildInfo>> map;
@@ -85,14 +92,12 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
     private boolean bb = true;
     private ControlAdapter adapter;
 
-    private CustomExpandableListView customExpandableListView;
-
-    private CustomEmptyView mCustomEmptyView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
             view = inflater.inflate(R.layout.datarecord_fragment, null);
+            ButterKnife.bind(this,view);
             initView(view);
             initData();
             setListen();
@@ -110,15 +115,9 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
     @Override
     protected void initView(View view) {
 
-        t1 = getView(view, R.id.t1);
-        t2 = getView(view, R.id.t2);
-        t3 = getView(view, R.id.t3);
-        t4 = getView(view, R.id.t4);
-
-        mCustomEmptyView = getView(view, R.id.empty_layout);
-
-        customExpandableListView = getView(view,R.id.customExpandableListView);
         okHttpHelper = OkHttpHelper.getInstance(getActivity());
+        mDialog = new SpotsDialog(getActivity(),"拼命加载中...");
+        mDialog.show();
     }
 
     @Override
@@ -141,80 +140,6 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
     protected void setListen() {
 
     }
-
-
-
-    @Override
-    public void onNetResult(int flag, String jsonResult) {
-       // jsonString = jsonResult;
-
-    }
-
-    @Override
-    public void onNetComplete(int flag) {
-        /*if (jsonString != null) {
-            switch (flag) {
-                case Config.FLAG_ZERO:
-                   // Log.d("TAG",jsonString);
-
-
-
-
-                    break;
-
-                case Config.FLAG_ONE:
-                    Log.d("SETMESSAGE", "设置返回数据" + jsonString);
-                    if (jsonString.contains("'error'")) {
-                        IToast.showToast(getActivity(), "设置失败");
-                        if (getActivity() != null) {
-                            progressDialog1 = new ProgressDialog(getActivity());
-                            progressDialog1.setMessage("请稍候...");
-                            progressDialog1.setCanceledOnTouchOutside(false);
-                            progressDialog1.show();
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    b = true;
-                                    progressDialog1.dismiss();
-                                }
-                            }, 8000);
-                        }
-                    } else {
-                        try {
-                            org.json.JSONObject object1 = new org.json.JSONObject(jsonString);
-                            IToast.showToast(getActivity(), object1.getString("success"));
-                            //重新请求一下数据
-                            if (getActivity() != null) {
-                                progressDialog2 = new ProgressDialog(getActivity());
-                                progressDialog2.setMessage("请稍候...");
-                                progressDialog2.setCanceledOnTouchOutside(false);
-                                progressDialog2.show();
-                                Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        b = true;
-                                        progressDialog2.dismiss();
-                                    }
-                                }, 8000);
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
-
-            }
-
-
-        }*/
-    }
-
 
     public class ControlBroadcast extends BroadcastReceiver {
 
@@ -282,8 +207,8 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
                                             for (int i = 0; i < adapter.getGroupCount(); i++) {
                                                 customExpandableListView.expandGroup(i);
                                             }
-                                            if (progressDialog != null) {
-                                                progressDialog.dismiss();
+                                            if (mDialog != null) {
+                                                mDialog.dismiss();
                                             }
                                         }
 
@@ -421,8 +346,8 @@ public class ControlSetFragment extends BaseFragment implements  IOnNetResultLis
     @Override
     public void onPause() {
         super.onPause();
-        if (progressDialog != null) {
-            progressDialog.dismiss();
+        if (mDialog != null) {
+            mDialog.dismiss();
         }
     }
 

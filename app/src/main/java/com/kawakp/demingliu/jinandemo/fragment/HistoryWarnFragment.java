@@ -1,6 +1,5 @@
 package com.kawakp.demingliu.jinandemo.fragment;
 
-import android.app.ProgressDialog;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,39 +9,25 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.adapter.HistoryWarnAdapter;
-import com.kawakp.demingliu.jinandemo.bean.HistoryWarnBean;
 import com.kawakp.demingliu.jinandemo.bean.MateralBean;
 import com.kawakp.demingliu.jinandemo.bean.WarmBean;
-import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
-import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
-import com.kawakp.demingliu.jinandemo.net.NetController;
-import com.kawakp.demingliu.jinandemo.utils.MyListView;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.PopUtils;
-import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 import com.kawakp.demingliu.jinandemo.utils.wheelviewutlis.NumericWheelAdapter;
 import com.kawakp.demingliu.jinandemo.utils.wheelviewutlis.OnWheelScrollListener;
 import com.kawakp.demingliu.jinandemo.utils.wheelviewutlis.WheelView;
-import com.kawakp.demingliu.jinandemo.widget.DividerItemDecoration;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -316,7 +301,7 @@ public class HistoryWarnFragment extends BaseFragment {
         int curYear = c.get(Calendar.YEAR);
         int curMonth = c.get(Calendar.MONTH) + 1;//通过Calendar算出的月数要+1
         int curDate = c.get(Calendar.DATE);
-        final View view = LayoutInflater.from(getActivity()).inflate(R.layout.datapick, null);
+        final View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_datapick, null);
 
         year = (WheelView) view.findViewById(R.id.year);
         year.setAdapter(new NumericWheelAdapter(1950, curYear));

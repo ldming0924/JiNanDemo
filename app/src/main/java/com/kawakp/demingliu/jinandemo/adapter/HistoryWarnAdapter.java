@@ -1,17 +1,10 @@
 package com.kawakp.demingliu.jinandemo.adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.bean.HistoryWarnBean;
 import com.kawakp.demingliu.jinandemo.bean.WarmBean;
-import com.kawakp.demingliu.jinandemo.utils.ViewHodle;
 
 import java.util.List;
 
@@ -23,7 +16,7 @@ public class HistoryWarnAdapter extends SimpleAdapter<WarmBean> {
     private Context context;
 
     public HistoryWarnAdapter(Context context,  List<WarmBean> datas) {
-        super(context, R.layout.historywarn_item, datas);
+        super(context, R.layout.adapter_historywarn_item, datas);
         this.context = context;
     }
 

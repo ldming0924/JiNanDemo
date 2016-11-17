@@ -1,11 +1,8 @@
 package com.kawakp.demingliu.jinandemo.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,11 +13,8 @@ import android.widget.EditText;
 
 
 import com.kawakp.demingliu.jinandemo.R;
-import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
-import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
-import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
@@ -56,7 +50,7 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public int setContentViewId() {
-        return R.layout.loginact;
+        return R.layout.activity_login;
     }
 
     @Override

@@ -1,11 +1,9 @@
 package com.kawakp.demingliu.jinandemo.fragment;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ProviderInfo;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,13 +27,9 @@ import com.kawakp.demingliu.jinandemo.bean.Bean;
 import com.kawakp.demingliu.jinandemo.bean.ChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
 import com.kawakp.demingliu.jinandemo.bean.MyElementBean;
-import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.constant.MyConstant;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
-import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
-import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
-import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.PopUtils;
@@ -89,7 +83,7 @@ public class ParameterSetFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
-            view = inflater.inflate(R.layout.parameter_setting, null);
+            view = inflater.inflate(R.layout.fragment_parameter_set, null);
             ButterKnife.bind(this,view);
             initView(view);
             initData();

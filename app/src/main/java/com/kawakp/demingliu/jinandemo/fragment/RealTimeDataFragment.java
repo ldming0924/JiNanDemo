@@ -1,51 +1,37 @@
 package com.kawakp.demingliu.jinandemo.fragment;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.kawakp.demingliu.jinandemo.R;
-import com.kawakp.demingliu.jinandemo.adapter.ExpandableListViewAdapter;
 import com.kawakp.demingliu.jinandemo.adapter.RealTimeExpandableAdapter;
 import com.kawakp.demingliu.jinandemo.bean.Bean;
 import com.kawakp.demingliu.jinandemo.bean.ChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
 import com.kawakp.demingliu.jinandemo.bean.MyElementBean;
-import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.constant.MyConstant;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
-import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
-import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
-import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.DrawChart;
 import com.kawakp.demingliu.jinandemo.utils.DrawChart1;
 import com.kawakp.demingliu.jinandemo.utils.DrawChart2;
 import com.kawakp.demingliu.jinandemo.utils.DrawChart3;
-import com.kawakp.demingliu.jinandemo.utils.HttpUtils;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.PopUtils;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
@@ -54,7 +40,6 @@ import com.kawakp.demingliu.jinandemo.widget.CustomEmptyView;
 
 import org.json.JSONException;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -171,7 +156,7 @@ public class RealTimeDataFragment extends BaseFragment {
     }
 
     private void showPopWindow(String s, final int parentID, final int childID) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.chart_popuwindow, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_chart_popuwindow, null);
         final PopupWindow pw = new PopupWindow(view,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, false);
@@ -217,7 +202,7 @@ public class RealTimeDataFragment extends BaseFragment {
     }
 
     private void showPopWindow2(String s, final int parentID, final int childID) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.chart_p2, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_chart_p2, null);
         final PopupWindow pw = new PopupWindow(view,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, false);
@@ -262,7 +247,7 @@ public class RealTimeDataFragment extends BaseFragment {
     }
 
     private void showPopWindow3(String s, final int parentID, final int childID) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.chart_p3, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_chart_p3, null);
         final PopupWindow pw = new PopupWindow(view,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, false);
@@ -308,7 +293,7 @@ public class RealTimeDataFragment extends BaseFragment {
     }
 
     private void showPopWindow4(String s, final int parentID, final int childID) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.chart_p4, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_chart_p4, null);
         final PopupWindow pw = new PopupWindow(view,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, false);

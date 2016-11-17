@@ -1,9 +1,7 @@
 package com.kawakp.demingliu.jinandemo.adapter;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +11,9 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.kawakp.demingliu.jinandemo.R;
-import com.kawakp.demingliu.jinandemo.bean.ChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.ControlChildInfo;
-import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
-import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
-import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
-import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
@@ -115,7 +108,7 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.parameter_parent, viewGroup, false);
+            view = inflater.inflate(R.layout.adapter_parameter_parent, viewGroup, false);
         }
         TextView tv = (TextView) view
                 .findViewById(R.id.tv_parameter_parent);
@@ -134,7 +127,7 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
         switch (type) {
             case 0:
                 if (view == null) {
-                    view = inflater.inflate(R.layout.control_adapter_child_item, viewGroup, false);
+                    view = inflater.inflate(R.layout.adapter_control_child_item, viewGroup, false);
                     RadioButton rb_manul = (RadioButton) view.findViewById(R.id.loop_manul);
                     RadioButton rb_auto = (RadioButton) view.findViewById(R.id.loop_auto);
                     if (info.getValue().equals("0")) {
@@ -169,7 +162,7 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
                 break;
             case 1:
                 if (view == null) {
-                    view = inflater.inflate(R.layout.control_adapter_child_item, viewGroup, false);
+                    view = inflater.inflate(R.layout.adapter_control_child_item, viewGroup, false);
                     RadioButton rb_manul = (RadioButton) view.findViewById(R.id.loop_manul);
                     RadioButton rb_auto = (RadioButton) view.findViewById(R.id.loop_auto);
                     if (info.getValue().equals("0")) {
@@ -202,7 +195,7 @@ public class ControlAdapter extends BaseExpandableListAdapter  {
             case 2:
 
                 if (view == null) {
-                    view = inflater.inflate(R.layout.control_adapter_item2, viewGroup, false);
+                    view = inflater.inflate(R.layout.adapter_control_item2, viewGroup, false);
                 }
                 TextView name = (TextView) view
                         .findViewById(R.id.tv_parameter_childName);

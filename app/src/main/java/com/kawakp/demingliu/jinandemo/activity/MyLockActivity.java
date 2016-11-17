@@ -37,7 +37,7 @@ public class MyLockActivity extends Activity implements IOnNetResultListener {
                 | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
                 | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                 | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-        setContentView(R.layout.lockact);
+        setContentView(R.layout.activity_lock);
         initView();
         initData();
 

@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kawakp.demingliu.jinandemo.R;
-import com.kawakp.demingliu.jinandemo.activity.BaseActivity;
 import com.kawakp.demingliu.jinandemo.bean.ChildInfo;
 
 import java.util.List;
@@ -73,7 +72,7 @@ public class RealTimeExpandableAdapter extends BaseExpandableListAdapter {
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.parameter_parent,viewGroup,false);
+            view = inflater.inflate(R.layout.adapter_parameter_parent,viewGroup,false);
         }
         TextView tv = (TextView) view
                 .findViewById(R.id.tv_parameter_parent);
@@ -88,7 +87,7 @@ public class RealTimeExpandableAdapter extends BaseExpandableListAdapter {
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.reltime_adapter_child_item, viewGroup,false);
+            view = inflater.inflate(R.layout.adapter_reltime_child_item, viewGroup,false);
         }
         TextView name = (TextView) view
                 .findViewById(R.id.textView_leiming);

@@ -1,11 +1,8 @@
 package com.kawakp.demingliu.jinandemo.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -24,17 +21,13 @@ import com.kawakp.demingliu.jinandemo.bean.DeviceListBean;
 import com.kawakp.demingliu.jinandemo.bean.OrgBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
-import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
-import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
-import com.kawakp.demingliu.jinandemo.net.NetController;
 import com.kawakp.demingliu.jinandemo.service.ServiceHelper;
 import com.kawakp.demingliu.jinandemo.service.WarnService;
 import com.kawakp.demingliu.jinandemo.tree.bean.Bean;
 import com.kawakp.demingliu.jinandemo.tree.bean.Node;
 import com.kawakp.demingliu.jinandemo.tree.bean.TreeListViewAdapter;
 import com.kawakp.demingliu.jinandemo.tree.view.SimpleTreeAdapter;
-import com.kawakp.demingliu.jinandemo.utils.IToast;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.PopUtils;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
@@ -67,7 +60,7 @@ public class DeviceListActivity extends BaseActivity  {
 
     @Override
     public int setContentViewId() {
-        return R.layout.devicelistact;
+        return R.layout.activity_device;
     }
 
     @Override
@@ -190,7 +183,7 @@ public class DeviceListActivity extends BaseActivity  {
     }
 
     private void showPopWindow() {
-        View view = LayoutInflater.from(DeviceListActivity.this).inflate(R.layout.cancel_login, null);
+        View view = LayoutInflater.from(DeviceListActivity.this).inflate(R.layout.dialog_cancel_login, null);
         final PopupWindow pw = new PopupWindow(view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, false);
         pw.setFocusable(true);
         pw.setOutsideTouchable(false);

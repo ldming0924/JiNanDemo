@@ -1,49 +1,31 @@
 package com.kawakp.demingliu.jinandemo.fragment;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.kawakp.demingliu.jinandemo.R;
-import com.kawakp.demingliu.jinandemo.activity.AnimotionActivity;
-import com.kawakp.demingliu.jinandemo.activity.MainActivity;
 import com.kawakp.demingliu.jinandemo.adapter.ControlAdapter;
-import com.kawakp.demingliu.jinandemo.adapter.ExpandableListViewAdapter;
 import com.kawakp.demingliu.jinandemo.bean.Bean;
-import com.kawakp.demingliu.jinandemo.bean.ChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.ControlChildInfo;
 import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
 import com.kawakp.demingliu.jinandemo.bean.MyElementBean;
-import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.constant.MyConstant;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
-import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
-import com.kawakp.demingliu.jinandemo.net.NetController;
-import com.kawakp.demingliu.jinandemo.utils.IToast;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
-import com.kawakp.demingliu.jinandemo.widget.CheckSwitchButton;
 import com.kawakp.demingliu.jinandemo.widget.CustomEmptyView;
 import com.kawakp.demingliu.jinandemo.widget.CustomExpandableListView;
 
@@ -97,7 +79,7 @@ public class ControlSetFragment extends BaseFragment  {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view == null) {
-            view = inflater.inflate(R.layout.datarecord_fragment, null);
+            view = inflater.inflate(R.layout.fragment_controlset, null);
             ButterKnife.bind(this,view);
             initView(view);
             initData();

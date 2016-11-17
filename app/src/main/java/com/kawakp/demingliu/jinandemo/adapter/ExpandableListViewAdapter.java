@@ -1,12 +1,10 @@
 package com.kawakp.demingliu.jinandemo.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -97,7 +95,7 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.parameter_parent, parent, false);
+            convertView = inflater.inflate(R.layout.adapter_parameter_parent, parent, false);
         }
         TextView tv = (TextView) convertView
                 .findViewById(R.id.tv_parameter_parent);

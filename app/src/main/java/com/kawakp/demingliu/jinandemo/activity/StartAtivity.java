@@ -2,20 +2,12 @@ package com.kawakp.demingliu.jinandemo.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.kawakp.demingliu.jinandemo.R;
-import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
-import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
-import com.kawakp.demingliu.jinandemo.net.NetController;
-import com.kawakp.demingliu.jinandemo.service.ServiceHelper;
-import com.kawakp.demingliu.jinandemo.service.WarnService;
 import com.kawakp.demingliu.jinandemo.utils.AnimationUtil;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
 import com.kawakp.demingliu.jinandemo.utils.Path;
@@ -26,7 +18,6 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import okhttp3.Response;
 
@@ -44,7 +35,7 @@ public class StartAtivity extends BaseActivity {
 
     @Override
     public int setContentViewId() {
-        return R.layout.startact;
+        return R.layout.activity_start;
     }
 
     @Override

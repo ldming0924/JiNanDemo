@@ -110,7 +110,9 @@ public class ControlSetFragment extends BaseFragment  {
         deviceID = SharedPerferenceHelper.getDeviceId(getActivity());
 
         //获取分类
-        url = Path.PARAM_LIST + "plcDataModelId=" + modelID + "&type=CONTROL";
+        //url = Path.PARAM_LIST + "plcDataModelId=" + modelID + "&type=CONTROL";
+       // url = Path.PARAM_LIST  + "&type=CONTROL";
+        url = Path.PARAM_LIST +"devices/"+deviceID+ "/elementCategorys?plcDataModelId=jngn" +  "&type=CONTROL";
         Log.d("CC",url);
     }
 

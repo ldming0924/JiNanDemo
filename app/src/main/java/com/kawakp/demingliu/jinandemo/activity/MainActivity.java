@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jauker.widget.BadgeView;
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.constant.Config;
@@ -26,11 +28,19 @@ import com.kawakp.demingliu.jinandemo.fragment.ControlSetFragment;
 import com.kawakp.demingliu.jinandemo.fragment.ParameterSetFragment;
 import com.kawakp.demingliu.jinandemo.fragment.HistoryWarnFragment;
 import com.kawakp.demingliu.jinandemo.fragment.RealTimeDataFragment;
+import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.service.RealTimeDataService;
+import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
+import com.kawakp.demingliu.jinandemo.utils.SystemVerdonCode;
+import com.kawakp.demingliu.jinandemo.utils.UpdateManager;
+
+import org.json.JSONException;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import okhttp3.Response;
 
 
 public class MainActivity extends BaseActivity  {
@@ -64,6 +74,9 @@ public class MainActivity extends BaseActivity  {
     private int update = 0;
     private BadgeView badgeView;
     private WarmReceive warmReceive;
+    private OkHttpHelper okHttpHelper;
+    private int versionCode = 0;
+    private int code = 1;
 
 
     @Override
@@ -85,7 +98,44 @@ public class MainActivity extends BaseActivity  {
         super.onResume();
         warmReceive = new WarmReceive();
         registerReceiver(warmReceive, new IntentFilter(Config.WARM_RECEIVE));
+        getAppMessage();
+    }
 
+    private void getAppMessage() {
+        //获取app信息
+        okHttpHelper = OkHttpHelper.getInstance(MainActivity.this);
+        okHttpHelper.get(Path.APP_MSG_PATH, new SimpleCallback<String>(MainActivity.this) {
+
+            @Override
+            public void onSuccess(Response response, String s) {
+                Log.d("TAG","appxinxi="+s);
+                if (s != null && !s.equals("")) {
+                    org.json.JSONObject object = null;
+                    try {
+                        object = new org.json.JSONObject(s);
+                        versionCode = object.getInt("versionCode");
+                        String appName = object.getString("appName");
+                        code = SystemVerdonCode.getAppVersionCode(MainActivity.this);
+                        if (versionCode > code) {
+                            //更新app
+                            long timeMillis = System.currentTimeMillis();
+                            UpdateManager manager = new UpdateManager(MainActivity.this, timeMillis, appName);
+                            //检查软件更新
+                            manager.checkUpdate(true);
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onError(Response response, int code, Exception e) {
+
+            }
+        });
     }
 
     @Override
@@ -97,6 +147,7 @@ public class MainActivity extends BaseActivity  {
     protected void initData() {
         Intent intent = new Intent(MainActivity.this, RealTimeDataService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
+
     }
 
     ServiceConnection conn = new ServiceConnection() {

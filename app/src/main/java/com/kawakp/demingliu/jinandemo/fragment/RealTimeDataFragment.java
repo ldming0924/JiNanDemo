@@ -32,6 +32,7 @@ import com.kawakp.demingliu.jinandemo.utils.DrawChart;
 import com.kawakp.demingliu.jinandemo.utils.DrawChart1;
 import com.kawakp.demingliu.jinandemo.utils.DrawChart2;
 import com.kawakp.demingliu.jinandemo.utils.DrawChart3;
+import com.kawakp.demingliu.jinandemo.utils.LinView;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.PopUtils;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
@@ -68,6 +69,7 @@ public class RealTimeDataFragment extends BaseFragment {
     @Bind(R.id.empty_layout)
     CustomEmptyView mCustomEmptyView;
     private String modelID;
+    private String deviceID;
     private RealTimeBroadCase realTimeBroadCase;
     private List<Bean> totallist = new ArrayList<Bean>();  //分类
     private List<DataDisplayActBean> real_totallist = new ArrayList<>();//实时数据
@@ -107,7 +109,10 @@ public class RealTimeDataFragment extends BaseFragment {
     @Override
     protected void initData() {
         modelID = SharedPerferenceHelper.getDeviceModelId(getActivity());
-        url = Path.PARAM_LIST + "plcDataModelId=" + modelID + "&type=MONITOR";
+        deviceID = SharedPerferenceHelper.getDeviceId(getActivity());
+       // url = Path.PARAM_LIST + "plcDataModelId=" + modelID + "&type=MONITOR";
+       // url = Path.PARAM_LIST + "type=MONITOR";
+        url = Path.PARAM_LIST +"devices/"+deviceID+ "/elementCategorys?plcDataModelId=jngn"  + "&type=MONITOR";
         Log.d("TAG", url);
         if (getActivity() != null) {
             mDialog = new SpotsDialog(getActivity(),"拼命加载中...");
@@ -180,6 +185,7 @@ public class RealTimeDataFragment extends BaseFragment {
         title.setText(s);
         ImageView img_cancle = (ImageView) view.findViewById(R.id.imageView_pop_cancel);
 
+
         final Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -191,6 +197,7 @@ public class RealTimeDataFragment extends BaseFragment {
                 }
             }
         };
+
         timer.schedule(timerTask, 0, 1000);
         img_cancle.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -60,6 +60,7 @@ public class ParameterSetFragment extends BaseFragment {
     @Bind(R.id.empty_layout)
     CustomEmptyView mCustomEmptyView;
     private String modelID;
+    private String deviceID;
     private String url;
     private List<Bean> totallist = new ArrayList<Bean>();
     private PopupWindow pw;
@@ -109,9 +110,11 @@ public class ParameterSetFragment extends BaseFragment {
     @Override
     protected void initData() {
         modelID = SharedPerferenceHelper.getDeviceModelId(getActivity());
-
+        deviceID = SharedPerferenceHelper.getDeviceId(getActivity());
         //获取分类
-        url = Path.PARAM_LIST + "plcDataModelId=" + modelID + "&type=PARAM";
+        //url = Path.PARAM_LIST + "plcDataModelId=" + modelID + "&type=PARAM";
+       // url = Path.PARAM_LIST + "type=PARAM";
+        url = Path.PARAM_LIST +"devices/"+deviceID+ "/elementCategorys?plcDataModelId=jngn" + "&type=PARAM";
         Log.d("TAG", url);
         if (getActivity() != null) {
             mDialog = new SpotsDialog(getActivity(),"拼命加载中...");
@@ -243,6 +246,7 @@ public class ParameterSetFragment extends BaseFragment {
 
                                         @Override
                                         public void onSuccess(Response response, String s) {
+                                           // Log.d("TAG","canshu sheding =="+s);
                                             JSONArray jsonArray = JSON.parseArray(s);
                                             List<Bean> list = JSON.parseArray(jsonArray.toString(), Bean.class);
                                             totallist.clear();

@@ -12,12 +12,16 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 
+import com.alibaba.fastjson.JSON;
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
+import com.kawakp.demingliu.jinandemo.utils.SystemVerdonCode;
+import com.kawakp.demingliu.jinandemo.utils.UpdateManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,6 +68,8 @@ public class LoginActivity extends BaseActivity {
 
     protected void initData() {
 
+
+
         String str1 = SharedPerferenceHelper.getRememberPwd(LoginActivity.this);
         String str2 = SharedPerferenceHelper.getRememberAuto(LoginActivity.this);
         SharedPreferences sharedPreferences = SharedPerferenceHelper.getUserMessage(LoginActivity.this);
@@ -87,6 +93,14 @@ public class LoginActivity extends BaseActivity {
             auto_login.setChecked(false);
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+
 
 
     protected void setListen() {

@@ -79,6 +79,7 @@ public class DeviceListActivity extends BaseActivity  {
         device_url = Path.DEVICELIST_PATH + "&pageNum=" + page + "&pageSize=" + pageSize;
         //获取组织结构url
         String url = "http://kawakp.chinclouds.com:60034/userconsle/orgs" + orgId;
+        Log.d("TAG","------"+url+"　＝＝＝"+device_url);
         //获取组织结构列表
         getOrg(url);
     }
@@ -93,7 +94,7 @@ public class DeviceListActivity extends BaseActivity  {
 
             @Override
             public void onSuccess(Response response, String s) {
-
+                //Log.d("TAG","zuzhijiegou ==="+s);
                 JSONArray array = JSON.parseArray(s);
                 List<OrgBean> list = JSON.parseArray(array.toString(), OrgBean.class);
                 totallist.addAll(list);
@@ -119,6 +120,8 @@ public class DeviceListActivity extends BaseActivity  {
 
             @Override
             public void onSuccess(Response response, String s) {
+               // Log.d("TAG","设备列表=="+s);
+
                 JSONObject jsonObject = JSON.parseObject(s);
                 JSONArray array = jsonObject.getJSONArray("list");
                 List<DeviceListBean> list = JSON.parseArray(array.toString(), DeviceListBean.class);
@@ -140,7 +143,8 @@ public class DeviceListActivity extends BaseActivity  {
                         @Override
                         public void onClick(Node node, int position) {
                             if (node.isLeaf()) {
-                                if (node.getDeviceId() != null && node.getPlcDataModelId() != null) {
+                                if (node.getDeviceId() != null ) {
+                                    //if (node.getDeviceId() != null && node.getPlcDataModelId() != null) {
                                     //保存deviceModelId
                                     boolean b = SharedPerferenceHelper.saveDeviceModelId(DeviceListActivity.this, node.getPlcDataModelId(), node.getDeviceId());
                                     if (b) {

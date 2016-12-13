@@ -49,8 +49,6 @@ import rx.schedulers.Schedulers;
  * Created by zuheng.lv on 2016/8/8.
  */
 public class AnimotionActivity extends Activity  {
-
-
     @Bind(R.id.animotion_forpressure_1)
     TextView animotion_forpressure_1;
     @Bind(R.id.animotion_fortemp_1)
@@ -90,9 +88,6 @@ public class AnimotionActivity extends Activity  {
 
     }
 
-
-
-
     public void initViews() {
         okHttpHelper = OkHttpHelper.getInstance(AnimotionActivity.this);
         animatiom = (MyAnimation) findViewById(R.id.anition);
@@ -100,9 +95,6 @@ public class AnimotionActivity extends Activity  {
         flag = true;
 
     }
-
-
-
 
 
     private void initData() {
@@ -180,17 +172,18 @@ public class AnimotionActivity extends Activity  {
                     animotion_returnpressure_2.setText(totallist.get(0).getHY2() + "MPa");
                     animotion_water.setText(totallist.get(0).getWL() + "m");
 
-                    int xhv1 = totallist.get(0).getRUN_XHV1();
-                    int xhv2 = totallist.get(0).getRUN_XHV2();
-                    int bsv1 = totallist.get(0).getRUN_BSV1();
-                    int bsv2 = totallist.get(0).getRUN_BSV2();
+                    //判断泵状态
+                    int xhv1 = totallist.get(0).getRUN_XHV1(); //一号循环泵
+                    int xhv2 = totallist.get(0).getRUN_XHV2();//2号循环泵
+                    int bsv1 = totallist.get(0).getRUN_BSV1();//一号补水泵
+                    int bsv2 = totallist.get(0).getRUN_BSV2();//2号补水泵
 
                     if (xhv1 != 0 || xhv2 != 0) {
                         animatiom.openCircle(1);
                     } else {
                         animatiom.stopCircle(1);
                     }
-                    ////////////////////////////////////
+                    ////////////////////////////////////一号循环泵开，二号循环泵关
                     if (xhv1 != 0 && xhv2 == 0) {
                         animatiom.startBeng(1);
                         animatiom.stopBeng(2);
@@ -210,7 +203,7 @@ public class AnimotionActivity extends Activity  {
                         animatiom.stopCircle(8);
                         animatiom.stopCircle(2);
                     }
-                    // /////////////////////////////  1号补水泵通1号循环泵通
+                    // /////////////////////////////  1号补水泵通
 
                     if (bsv1 != 0 && bsv2 == 0) {
                         if (xhv1 != 0 && xhv2 == 0) {
@@ -232,7 +225,7 @@ public class AnimotionActivity extends Activity  {
                     } else if (bsv1 == 0) {
                         animatiom.stopCircle(3);
                     }
-////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////// 2号补水泵通
                     if (bsv1 == 0 && bsv2 != 0) {
 
                         if (xhv1 != 0 && xhv2 == 0) {
@@ -254,7 +247,7 @@ public class AnimotionActivity extends Activity  {
                     } else if (bsv2 == 0) {
                         animatiom.stopCircle(4);
                     }
-///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////1 2 号补水泵关
                     if (bsv1 != 0 && bsv2 != 0) {
                         animatiom.stopCircle(3);
                         animatiom.stopCircle(4);

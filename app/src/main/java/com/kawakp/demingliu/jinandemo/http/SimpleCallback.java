@@ -2,6 +2,8 @@ package com.kawakp.demingliu.jinandemo.http;
 
 import android.content.Context;
 
+import java.io.InputStream;
+
 import okhttp3.Request;
 import okhttp3.Response;
 

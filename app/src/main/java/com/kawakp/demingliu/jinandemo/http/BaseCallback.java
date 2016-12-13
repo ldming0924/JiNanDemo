@@ -3,6 +3,7 @@ package com.kawakp.demingliu.jinandemo.http;
 import com.google.gson.internal.$Gson$Types;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 

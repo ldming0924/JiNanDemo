@@ -12,7 +12,8 @@ public class Path {
     //获取报警历史数据
     public static final String WARN_DATA = "http://kawakp.chinclouds.com:60034/userconsle/deviceAlarms?";
     //获取元件列表
-    public static final String PARAM_LIST ="http://kawakp.chinclouds.com:60034/userconsle/elementCategorys?";
+   // public static final String PARAM_LIST ="http://kawakp.chinclouds.com:60034/userconsle/elementCategorys?";
+    public static final String PARAM_LIST ="http://kawakp.chinclouds.com:60034/userconsle/";
     //控制设备
     public static String DEVICE_SET = "http://kawakp.chinclouds.com:60034/userconsle/devices/";
     //获取实时报警
@@ -20,5 +21,8 @@ public class Path {
 
     //请求最新的一条报警信息
     public static final String NEW_WARM = "http://kawakp.chinclouds.com:60034/userconsle/deviceAlarms?pageSize=1";
+
+    //获取app信息
+    public final static String APP_MSG_PATH = "http://kawakp.chinclouds.com:60034/userconsle/clientApps/HeatKeeper";
 
 }

@@ -3,9 +3,9 @@ package com.kawakp.demingliu.jinandemo.tree.bean;
 public class Bean
 {
 	@TreeNodeId
-	private String id;
+	private String id; //自己id
 	@TreeNodePid
-	private String pId;
+	private String pId; //父节点id
 	@TreeNodeLabel
 	private String label;
 
@@ -27,7 +27,7 @@ public class Bean
 		this.id = id;
 		this.pId = pId;
 		this.label = label;
-		this.plcDataModelId = plcDataModelId;
+		this.plcDataModelId = plcDataModelId;  //用于分类信息获取接口,已经不用了
 		this.deviceId = deviceId;
 		this.status = status;
 	}

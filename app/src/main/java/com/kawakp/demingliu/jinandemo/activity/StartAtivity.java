@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
@@ -48,6 +49,7 @@ public class StartAtivity extends BaseActivity {
         userName = sharedPreferences.getString("username", null);
         passWord = sharedPreferences.getString("password", null);
         auto = SharedPerferenceHelper.getRememberAuto(StartAtivity.this);
+        Log.d("TAG","aaaaaaaaaa");
 
         doLogin();
     }

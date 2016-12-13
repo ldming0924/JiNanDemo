@@ -88,6 +88,7 @@ public class DrawChart extends View {
 		drawTable(canvas); //表格
 		prepareLine(y); //坐标点
 		drawCurve(canvas); //折线
+
 	}
 
 	private void drawTable(Canvas canvas){

@@ -172,7 +172,6 @@ public class UpdateService extends Service {
                         //is = response.body().byteStream();
                         is = inputStream;
                         long total = length;
-                       // Log.d("TAG",total+"------");
                         File file = new File(mSavePath , time+"热力管家.apk");
                         fos = new FileOutputStream(file);
                         long sum = 0;

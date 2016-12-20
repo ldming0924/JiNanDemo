@@ -54,4 +54,9 @@
     <string name="soft_update_later">稍后更新</string>
     <string name="soft_updating">正在更新</string>
     <string name="soft_update_cancel">取消</string>
+
+    <string name="update_download_finish">下载完成</string>
+    <string name="update_download_start">开始下载</string>
+    <string name="update_download_failed">下载失败</string>
+    <string name="update_download_progressing">正在下载</string>
 </resources>

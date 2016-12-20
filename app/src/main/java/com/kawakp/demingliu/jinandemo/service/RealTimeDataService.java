@@ -86,7 +86,7 @@ public class RealTimeDataService extends Service {
 
             while (flag){
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                     okHttpHelper.get(url, new SimpleCallback<String>(getApplicationContext()) {
 
                         @Override

@@ -54,7 +54,6 @@ public class OkHttpHelper {
     private OkHttpHelper(Context context) {
 
         cookieJar1 = new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
-        Log.d("TAG", cookieJar1.toString() + "-----------------");
         mHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(10000L, TimeUnit.MILLISECONDS)
                 .readTimeout(10000L, TimeUnit.MILLISECONDS)

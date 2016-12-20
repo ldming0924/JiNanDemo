@@ -43,6 +43,7 @@
         
         <service android:name=".service.RealTimeDataService"/>
         <service android:name=".service.WarnService"/>
+        <service android:name=".service.UpdateService"/>
 
         <receiver android:name=".receiver.MyReceive">
             <intent-filter android:priority="500">

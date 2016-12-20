@@ -1,22 +1,31 @@
 package com.kawakp.demingliu.jinandemo.activity;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -31,10 +40,12 @@ import com.kawakp.demingliu.jinandemo.fragment.RealTimeDataFragment;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.service.RealTimeDataService;
+import com.kawakp.demingliu.jinandemo.service.UpdateService;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 import com.kawakp.demingliu.jinandemo.utils.SystemVerdonCode;
 import com.kawakp.demingliu.jinandemo.utils.UpdateManager;
+import com.kawakp.demingliu.jinandemo.widget.CommonDialog;
 
 import org.json.JSONException;
 
@@ -43,7 +54,7 @@ import butterknife.OnClick;
 import okhttp3.Response;
 
 
-public class MainActivity extends BaseActivity  {
+public class MainActivity extends BaseActivity {
     @Bind(R.id.lin1)
     LinearLayout lin1;
     @Bind(R.id.lin2)
@@ -77,7 +88,7 @@ public class MainActivity extends BaseActivity  {
     private OkHttpHelper okHttpHelper;
     private int versionCode = 0;
     private int code = 1;
-
+    private String appName = null;
 
     @Override
     public int setContentViewId() {
@@ -91,6 +102,7 @@ public class MainActivity extends BaseActivity  {
         realTimeDataFragment = new RealTimeDataFragment();
         setFragment(realTimeDataFragment);
         initData();
+        getAppMessage();
     }
 
     @Override
@@ -98,7 +110,7 @@ public class MainActivity extends BaseActivity  {
         super.onResume();
         warmReceive = new WarmReceive();
         registerReceiver(warmReceive, new IntentFilter(Config.WARM_RECEIVE));
-        getAppMessage();
+
     }
 
     private void getAppMessage() {
@@ -108,21 +120,17 @@ public class MainActivity extends BaseActivity  {
 
             @Override
             public void onSuccess(Response response, String s) {
-                Log.d("TAG","appxinxi="+s);
+                //Log.d("TAG", "appxinxi=" + s);
                 if (s != null && !s.equals("")) {
                     org.json.JSONObject object = null;
                     try {
                         object = new org.json.JSONObject(s);
                         versionCode = object.getInt("versionCode");
-                        String appName = object.getString("appName");
+                        appName = object.getString("appName");
                         code = SystemVerdonCode.getAppVersionCode(MainActivity.this);
                         if (versionCode > code) {
-                            //更新app
-                            long timeMillis = System.currentTimeMillis();
-                            UpdateManager manager = new UpdateManager(MainActivity.this, timeMillis, appName);
-                            //检查软件更新
-                            manager.checkUpdate(true);
 
+                            showNoticeDialog();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -136,6 +144,59 @@ public class MainActivity extends BaseActivity  {
 
             }
         });
+    }
+
+
+    /**
+     * 显示软件更新对话框
+     */
+    private void showNoticeDialog() {
+
+        CommonDialog.Builder builder = new CommonDialog.Builder(this);
+        builder.setTitle("升级提示");
+        builder.setMessage("检测到新版本，立即更新吗");
+        builder.setPositiveButton("更新", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+                if (Build.VERSION.SDK_INT >= 23) {
+                    //判断权限
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        //用户没有授予，做权限申请
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+                    }else {
+                        dialog.dismiss();
+                        startUpdateService();
+                    }
+                } else {
+                    // 显示下载对话框
+                   // checkUpdate();
+                    dialog.dismiss();
+                    //通知栏下载提示
+                    startUpdateService();
+                }
+            }
+
+        });
+        builder.setNegativeButton("稍候更新", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+            }
+        });
+        builder.create().show();
+    }
+
+    private void startUpdateService() {
+        String urlPath = "http://kawakp.chinclouds.com:60034/userconsle/clientApps/"+appName+"/file";
+        Intent intent = new Intent(MainActivity.this, UpdateService.class);
+        intent.putExtra("apkUrl", urlPath);
+        intent.putExtra("TIME",System.currentTimeMillis()+"");
+        startService(intent);
     }
 
     @Override
@@ -184,7 +245,7 @@ public class MainActivity extends BaseActivity  {
     }
 
 
-    @OnClick({R.id.lin_back,R.id.lin_anim,R.id.lin1,R.id.lin2,R.id.lin3,R.id.lin4})
+    @OnClick({R.id.lin_back, R.id.lin_anim, R.id.lin1, R.id.lin2, R.id.lin3, R.id.lin4})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.lin_back:
@@ -266,5 +327,29 @@ public class MainActivity extends BaseActivity  {
         }
     }
 
+
+    private void checkUpdate() {
+        long timeMillis = System.currentTimeMillis();
+        UpdateManager manager = new UpdateManager(MainActivity.this, timeMillis, appName);
+        //检查软件更新
+        manager.showDownloadDialog();
+    }
+
+     @Override
+    public void onRequestPermissionsResult(int requestCode,  String[] permissions,  int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case 0:
+                //权限回调处理
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //checkUpdate();
+                    startUpdateService();
+                }else {
+                    //用户拒绝权限申请
+                    Toast.makeText(MainActivity.this,"拒绝安装",Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
 
 }

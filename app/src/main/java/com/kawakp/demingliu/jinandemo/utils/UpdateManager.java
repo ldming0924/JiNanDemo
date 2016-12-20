@@ -145,6 +145,7 @@ public class UpdateManager {
                 dialog.dismiss();
             }
         });
+
         Dialog noticeDialog = builder.create();
         noticeDialog.show();
     }
@@ -152,7 +153,7 @@ public class UpdateManager {
     /**
      * 显示软件下载对话框
      */
-    private void showDownloadDialog() {
+    public void showDownloadDialog() {
         // 构造软件下载对话框
         Builder builder = new Builder(mContext);
         builder.setTitle(R.string.soft_updating);
@@ -170,6 +171,7 @@ public class UpdateManager {
                 cancelUpdate = true;
             }
         });
+
         mDownloadDialog = builder.create();
         mDownloadDialog.show();
         // 现在文件

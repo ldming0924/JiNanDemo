@@ -219,6 +219,7 @@ public class ControlSetFragment extends BaseFragment  {
                     }
                 }else {
                     initEmptyView();
+                    mDialog.dismiss();
                 }
 
                 setLight(intent);
@@ -305,7 +306,7 @@ public class ControlSetFragment extends BaseFragment  {
             List<ControlChildInfo> childInfos = new ArrayList<>();
             int size = totallist.get(i).getElements().size();
             for (int j = 0; j < size; j++) {
-                String displayName = totallist.get(i).getElements().get(j).getDisplayName();
+                String displayName = totallist.get(i).getElements().get(j).getName();
                 String address = totallist.get(i).getElements().get(j).getFieldName();
 
                 for (int k=0;k<ml.size();k++) {

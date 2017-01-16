@@ -145,7 +145,7 @@ public class Bean {
         private String categoryId;
         private String fieldName;
         private Object css;
-        private String displayName;
+        private String name;
         private String icon;
         private String id;
         private String level;
@@ -190,12 +190,12 @@ public class Bean {
             this.css = css;
         }
 
-        public String getDisplayName() {
-            return displayName;
+        public String getName() {
+            return name;
         }
 
-        public void setDisplayName(String displayName) {
-            this.displayName = displayName;
+        public void setName(String name) {
+            this.name = name;
         }
 
         public String getIcon() {

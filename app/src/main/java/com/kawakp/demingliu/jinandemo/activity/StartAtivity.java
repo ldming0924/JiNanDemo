@@ -9,6 +9,7 @@ import android.util.Log;
 import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
+import com.kawakp.demingliu.jinandemo.utils.ActivityManager;
 import com.kawakp.demingliu.jinandemo.utils.AnimationUtil;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
 import com.kawakp.demingliu.jinandemo.utils.Path;
@@ -41,6 +42,7 @@ public class StartAtivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        ActivityManager.getInstance().addActivity(this);
         initData();
     }
 
@@ -49,7 +51,6 @@ public class StartAtivity extends BaseActivity {
         userName = sharedPreferences.getString("username", null);
         passWord = sharedPreferences.getString("password", null);
         auto = SharedPerferenceHelper.getRememberAuto(StartAtivity.this);
-        Log.d("TAG","aaaaaaaaaa");
 
         doLogin();
     }
@@ -75,6 +76,7 @@ public class StartAtivity extends BaseActivity {
 
                         @Override
                         public void onSuccess(Response response, String s) {
+                            Log.d("TAG",s);
                             if (s == null ) {
                                 IToast.showToast(StartAtivity.this, "登录失败，请检查网络");
                                 startActivity(new Intent(StartAtivity.this, LoginActivity.class));
@@ -104,7 +106,7 @@ public class StartAtivity extends BaseActivity {
 
                         @Override
                         public void onError(Response response, int code, Exception e) {
-
+                            Log.d("TAG",code+"  "+e.toString());
                         }
                     });
 

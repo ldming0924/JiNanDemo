@@ -126,7 +126,7 @@ public class ParameterSetFragment extends BaseFragment {
         eLvParameter.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
-                Log.d("ParameterSetFragment", totallist.get(i).getElements().get(i1).getDisplayName());
+                Log.d("TAG", totallist.get(i).getElements().get(i1).getName());
                 ShowPopupWindow(totallist.get(i).getElements().get(i1).getId());
                 return false;
             }
@@ -161,21 +161,23 @@ public class ParameterSetFragment extends BaseFragment {
         lin_sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+               // Log.d("onClick","是否点击确定按钮");
+                pw.dismiss();
                 String deviceID = SharedPerferenceHelper.getDeviceId(getActivity());
                 String url = Path.DEVICE_SET + deviceID + "/elements/" + id;
                 String json = "{\"value\":" + editText.getText().toString() + "}";
+                Log.d("onClick","是否点击确定按钮"+url+"　"+json);
                 okHttpHelper.put(url, json, new SimpleCallback<String>(getActivity()) {
 
                     @Override
                     public void onSuccess(Response response, String s) {
+                        Log.d("onClick","确定返回按钮： "+s);
                         if (s.contains("'error'")){
                             IToast.showToast(getActivity(),"设置失败");
-
                         }else {
                             try {
                                 org.json.JSONObject object = new org.json.JSONObject(s);
                                 IToast.showToast(getActivity(),object.getString("success"));
-                                pw.dismiss();
                                 if (getActivity() != null) {
                                     mDialog1 = new SpotsDialog(getActivity(),"拼命加载中...");
                                     mDialog1.show();
@@ -196,7 +198,7 @@ public class ParameterSetFragment extends BaseFragment {
 
                     @Override
                     public void onError(Response response, int code, Exception e) {
-
+                        Log.d("onClick",e.toString()+"   "+code);
                     }
                 });
 
@@ -345,7 +347,7 @@ public class ParameterSetFragment extends BaseFragment {
             List<ChildInfo> childInfos = new ArrayList<>();
             int size = totallist.get(i).getElements().size();
             for (int j = 0; j < size; j++) {
-                String displayName = totallist.get(i).getElements().get(j).getDisplayName();
+                String displayName = totallist.get(i).getElements().get(j).getName();
                 String address = totallist.get(i).getElements().get(j).getDefaultAddress();
                 for (int k = 0; k < ml.size(); k++) {
                     Set set = ml.get(k).entrySet();

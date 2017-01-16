@@ -41,6 +41,7 @@ import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.service.RealTimeDataService;
 import com.kawakp.demingliu.jinandemo.service.UpdateService;
+import com.kawakp.demingliu.jinandemo.utils.ActivityManager;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 import com.kawakp.demingliu.jinandemo.utils.SystemVerdonCode;
@@ -86,9 +87,7 @@ public class MainActivity extends BaseActivity {
     private BadgeView badgeView;
     private WarmReceive warmReceive;
     private OkHttpHelper okHttpHelper;
-    private int versionCode = 0;
-    private int code = 1;
-    private String appName = null;
+
 
     @Override
     public int setContentViewId() {
@@ -97,12 +96,13 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        ActivityManager.getInstance().addActivity(this);
         lin_anim.setVisibility(View.GONE);
         title.setText(getIntent().getStringExtra("TITLE"));
         realTimeDataFragment = new RealTimeDataFragment();
         setFragment(realTimeDataFragment);
         initData();
-        getAppMessage();
+
     }
 
     @Override
@@ -113,91 +113,6 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    private void getAppMessage() {
-        //获取app信息
-        okHttpHelper = OkHttpHelper.getInstance(MainActivity.this);
-        okHttpHelper.get(Path.APP_MSG_PATH, new SimpleCallback<String>(MainActivity.this) {
-
-            @Override
-            public void onSuccess(Response response, String s) {
-                //Log.d("TAG", "appxinxi=" + s);
-                if (s != null && !s.equals("")) {
-                    org.json.JSONObject object = null;
-                    try {
-                        object = new org.json.JSONObject(s);
-                        versionCode = object.getInt("versionCode");
-                        appName = object.getString("appName");
-                        code = SystemVerdonCode.getAppVersionCode(MainActivity.this);
-                        if (versionCode > code) {
-
-                            showNoticeDialog();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-
-            @Override
-            public void onError(Response response, int code, Exception e) {
-
-            }
-        });
-    }
-
-
-    /**
-     * 显示软件更新对话框
-     */
-    private void showNoticeDialog() {
-
-        CommonDialog.Builder builder = new CommonDialog.Builder(this);
-        builder.setTitle("升级提示");
-        builder.setMessage("检测到新版本，立即更新吗");
-        builder.setPositiveButton("更新", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-
-                if (Build.VERSION.SDK_INT >= 23) {
-                    //判断权限
-                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        //用户没有授予，做权限申请
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-                    }else {
-                        dialog.dismiss();
-                        startUpdateService();
-                    }
-                } else {
-                    // 显示下载对话框
-                   // checkUpdate();
-                    dialog.dismiss();
-                    //通知栏下载提示
-                    startUpdateService();
-                }
-            }
-
-        });
-        builder.setNegativeButton("稍候更新", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-
-            }
-        });
-        builder.create().show();
-    }
-
-    private void startUpdateService() {
-        String urlPath = "http://kawakp.chinclouds.com:60034/userconsle/clientApps/"+appName+"/file";
-        Intent intent = new Intent(MainActivity.this, UpdateService.class);
-        intent.putExtra("apkUrl", urlPath);
-        intent.putExtra("TIME",System.currentTimeMillis()+"");
-        startService(intent);
-    }
 
     @Override
     protected void onPause() {
@@ -328,28 +243,6 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    private void checkUpdate() {
-        long timeMillis = System.currentTimeMillis();
-        UpdateManager manager = new UpdateManager(MainActivity.this, timeMillis, appName);
-        //检查软件更新
-        manager.showDownloadDialog();
-    }
 
-     @Override
-    public void onRequestPermissionsResult(int requestCode,  String[] permissions,  int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case 0:
-                //权限回调处理
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    //checkUpdate();
-                    startUpdateService();
-                }else {
-                    //用户拒绝权限申请
-                    Toast.makeText(MainActivity.this,"拒绝安装",Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
 
 }

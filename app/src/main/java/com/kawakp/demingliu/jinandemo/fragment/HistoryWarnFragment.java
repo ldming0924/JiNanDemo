@@ -142,6 +142,7 @@ public class HistoryWarnFragment extends BaseFragment {
                 totalPage =warmBeanMateralBean.getPages();
                 totallist = warmBeanMateralBean.getList();
                 showWaresData(totallist);
+                Log.d("HistoryWarnFragment",totallist.get(0).getName());
             }
 
             @Override

@@ -30,6 +30,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
+
             android:background="@drawable/editext_bac"
             android:hint="请输入您设置的参数" />
 

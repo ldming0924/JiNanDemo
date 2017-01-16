@@ -89,19 +89,6 @@
             android:hint="请输入您的密码" />
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/button_login"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_alignLeft="@+id/relativeLayout2"
-        android:layout_alignStart="@+id/relativeLayout2"
-        android:layout_below="@+id/relativeLayout2"
-        android:layout_marginRight="29dp"
-        android:layout_marginTop="33dp"
-        android:background="@drawable/landing_btn"
-        android:text="@string/login"
-        android:textColor="@color/white" />
-
     <CheckBox
         android:id="@+id/checkBox_remember_password"
         android:layout_width="wrap_content"
@@ -120,5 +107,18 @@
         android:layout_alignRight="@+id/button_login"
         android:layout_alignTop="@+id/checkBox_remember_password"
         android:text="自动登录" />
+
+    <Button
+        android:id="@+id/button_login"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginRight="29dp"
+        android:background="@drawable/landing_btn"
+        android:text="@string/login"
+        android:textColor="@color/white"
+        android:layout_below="@+id/relativeLayout2"
+        android:layout_alignLeft="@+id/relativeLayout2"
+        android:layout_alignStart="@+id/relativeLayout2" />
 
 </RelativeLayout>

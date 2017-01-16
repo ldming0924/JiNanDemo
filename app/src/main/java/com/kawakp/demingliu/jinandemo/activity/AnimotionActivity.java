@@ -23,6 +23,7 @@ import com.kawakp.demingliu.jinandemo.bean.DataDisplayActBean;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
+import com.kawakp.demingliu.jinandemo.utils.ActivityManager;
 import com.kawakp.demingliu.jinandemo.utils.Animatiom;
 import com.kawakp.demingliu.jinandemo.utils.HttpUtils;
 import com.kawakp.demingliu.jinandemo.utils.MyAnimation;
@@ -82,6 +83,7 @@ public class AnimotionActivity extends Activity  {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_animotion);
+        ActivityManager.getInstance().addActivity(this);
         ButterKnife.bind(this);
         initViews();
         initData();

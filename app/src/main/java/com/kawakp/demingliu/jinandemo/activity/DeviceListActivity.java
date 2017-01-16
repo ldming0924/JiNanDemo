@@ -1,8 +1,14 @@
 package com.kawakp.demingliu.jinandemo.activity;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -21,17 +27,24 @@ import com.kawakp.demingliu.jinandemo.bean.DeviceListBean;
 import com.kawakp.demingliu.jinandemo.bean.OrgBean;
 import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
+import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
 import com.kawakp.demingliu.jinandemo.service.ServiceHelper;
+import com.kawakp.demingliu.jinandemo.service.UpdateService;
 import com.kawakp.demingliu.jinandemo.service.WarnService;
 import com.kawakp.demingliu.jinandemo.tree.bean.Bean;
 import com.kawakp.demingliu.jinandemo.tree.bean.Node;
 import com.kawakp.demingliu.jinandemo.tree.bean.TreeListViewAdapter;
 import com.kawakp.demingliu.jinandemo.tree.view.SimpleTreeAdapter;
+import com.kawakp.demingliu.jinandemo.utils.ActivityManager;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.PopUtils;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
+import com.kawakp.demingliu.jinandemo.utils.SystemVerdonCode;
+import com.kawakp.demingliu.jinandemo.widget.CommonDialog;
 
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +70,10 @@ public class DeviceListActivity extends BaseActivity  {
     private String device_url;
     private OkHttpHelper okHttpHelper;
 
+    private int versionCode = 0;
+    private int code = 1;
+    private String appName = null;
+
 
     @Override
     public int setContentViewId() {
@@ -65,6 +82,7 @@ public class DeviceListActivity extends BaseActivity  {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        ActivityManager.getInstance().addActivity(this);
         okHttpHelper = OkHttpHelper.getInstance(DeviceListActivity.this);
         initData();
     }
@@ -166,6 +184,7 @@ public class DeviceListActivity extends BaseActivity  {
                     Log.d("ERR", e.toString());
                 }
                 listView.setAdapter(mAdapter);
+                getAppMessage(); //获取更新信息
             }
 
             @Override
@@ -209,6 +228,7 @@ public class DeviceListActivity extends BaseActivity  {
             public void onClick(View v) {
                 startActivity(new Intent(DeviceListActivity.this, LoginActivity.class));
                 pw.dismiss();
+                ActivityManager.getInstance().exit();
             }
         });
         lin_cancel.setOnClickListener(new View.OnClickListener() {
@@ -240,5 +260,105 @@ public class DeviceListActivity extends BaseActivity  {
                 break;
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+
+    private void getAppMessage() {
+        //获取app信息
+        OkHttpHelper okHttpHelper = OkHttpHelper.getInstance(DeviceListActivity.this);
+        okHttpHelper.get(Path.APP_MSG_PATH, new SimpleCallback<String>(DeviceListActivity.this) {
+
+            @Override
+            public void onSuccess(Response response, String s) {
+                Log.d("TAG", "appxinxi=" + s);
+                if (s != null && !s.equals("")) {
+                    org.json.JSONObject object = null;
+                    try {
+                        object = new org.json.JSONObject(s);
+                        versionCode = object.getInt("versionCode");
+                        appName = object.getString("appName");
+                        code = SystemVerdonCode.getAppVersionCode(DeviceListActivity.this);
+                        if (versionCode > code) {
+                            showNoticeDialog();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onError(Response response, int code, Exception e) {
+
+            }
+        });
+    }
+    /**
+     * 显示软件更新对话框
+     */
+    private void showNoticeDialog() {
+
+        CommonDialog.Builder builder = new CommonDialog.Builder(this);
+        builder.setTitle("升级提示");
+        builder.setMessage("检测到新版本，立即更新吗");
+        builder.setPositiveButton("更新", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+                if (Build.VERSION.SDK_INT >= 23) {
+                    //判断权限
+                    if (ContextCompat.checkSelfPermission(DeviceListActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        //用户没有授予，做权限申请
+                        ActivityCompat.requestPermissions(DeviceListActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+                    }else {
+                        dialog.dismiss();
+                        startUpdateService();
+                    }
+                } else {
+                    // 显示下载对话框
+                    // checkUpdate();
+                    dialog.dismiss();
+                    //通知栏下载提示
+                    startUpdateService();
+                }
+            }
+
+        });
+        builder.setNegativeButton("稍候更新", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+            }
+        });
+        builder.create().show();
+    }
+
+    private void startUpdateService() {
+        String urlPath = "http://kawakp.chinclouds.com:60034/userconsle/clientApps/"+appName+"/file";
+        Intent intent = new Intent(DeviceListActivity.this, UpdateService.class);
+        intent.putExtra("apkUrl", urlPath);
+        intent.putExtra("TIME",System.currentTimeMillis()+"");
+        startService(intent);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String[] permissions,  int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case 0:
+                //权限回调处理
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //checkUpdate();
+                    startUpdateService();
+                }else {
+                    //用户拒绝权限申请
+                    Toast.makeText(DeviceListActivity.this,"拒绝安装",Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 }

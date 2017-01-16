@@ -1,15 +1,23 @@
 package com.kawakp.demingliu.jinandemo.activity;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 import com.alibaba.fastjson.JSON;
@@ -17,11 +25,14 @@ import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.http.OkHttpHelper;
 import com.kawakp.demingliu.jinandemo.http.SimpleCallback;
 import com.kawakp.demingliu.jinandemo.http.SpotsCallBack;
+import com.kawakp.demingliu.jinandemo.service.UpdateService;
+import com.kawakp.demingliu.jinandemo.utils.ActivityManager;
 import com.kawakp.demingliu.jinandemo.utils.IToast;
 import com.kawakp.demingliu.jinandemo.utils.Path;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 import com.kawakp.demingliu.jinandemo.utils.SystemVerdonCode;
 import com.kawakp.demingliu.jinandemo.utils.UpdateManager;
+import com.kawakp.demingliu.jinandemo.widget.CommonDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,11 +70,11 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void initViews(Bundle savedInstanceState) {
+        ActivityManager.getInstance().addActivity(this);
         initData();
         setListen();
+
     }
-
-
 
 
     protected void initData() {
@@ -92,6 +103,8 @@ public class LoginActivity extends BaseActivity {
         } else {
             auto_login.setChecked(false);
         }
+
+
     }
 
     @Override
@@ -99,8 +112,6 @@ public class LoginActivity extends BaseActivity {
         super.onResume();
 
     }
-
-
 
 
     protected void setListen() {
@@ -189,6 +200,30 @@ public class LoginActivity extends BaseActivity {
                 break;
         }
     }
+
+    //点击两次退出
+    private long firstTime = 0;
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+                long secondTime = System.currentTimeMillis();
+                if (secondTime - firstTime > 2000) { //如果两次按键时间间隔大于2秒，则不退出
+                    Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                    firstTime = secondTime;//更新firstTime
+                    return true;
+                } else { //两次按键小于2秒时，退出应用
+
+                    System.exit(0);
+
+                }
+                break;
+        }
+        return super.onKeyUp(keyCode, event);
+    }
+
+
 
 
 }

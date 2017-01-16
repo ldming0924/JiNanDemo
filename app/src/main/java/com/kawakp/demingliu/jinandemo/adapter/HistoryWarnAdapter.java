@@ -25,7 +25,7 @@ public class HistoryWarnAdapter extends SimpleAdapter<WarmBean> {
     @Override
     protected void convert(BaseViewHolder viewHoder, WarmBean item) {
         viewHoder.getTextView(R.id.textView_time).setText(item.getCreateDate());
-        viewHoder.getTextView(R.id.textView_shijian).setText(item.getDisplayName());
+        viewHoder.getTextView(R.id.textView_shijian).setText(item.getName());
         int type = viewHoder.getItemViewType();
         switch (type){
             case 0:

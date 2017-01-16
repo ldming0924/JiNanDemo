@@ -4,6 +4,8 @@ package com.kawakp.demingliu.jinandemo.utils;
  * Created by deming.liu on 2016/8/5.
  */
 public class Path {
+
+   //public static final String LOGIN_PATH = "http://kawakp.chinclouds.com:60034/userconsle/login";
     public static final String LOGIN_PATH = "http://kawakp.chinclouds.com:60034/userconsle/login";
     //设备列表
     public final static String DEVICELIST_PATH = "http://kawakp.chinclouds.com:60034/userconsle/devices?";

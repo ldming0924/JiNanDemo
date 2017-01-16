@@ -14,6 +14,7 @@ import com.kawakp.demingliu.jinandemo.R;
 import com.kawakp.demingliu.jinandemo.constant.Config;
 import com.kawakp.demingliu.jinandemo.listener.IOnNetResultListener;
 import com.kawakp.demingliu.jinandemo.net.NetController;
+import com.kawakp.demingliu.jinandemo.utils.ActivityManager;
 import com.kawakp.demingliu.jinandemo.utils.SharedPerferenceHelper;
 
 import org.json.JSONArray;
@@ -33,6 +34,7 @@ public class MyLockActivity extends Activity implements IOnNetResultListener {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Window win = getWindow();
+        ActivityManager.getInstance().addActivity(this);
         win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                 | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
                 | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
@@ -44,11 +46,9 @@ public class MyLockActivity extends Activity implements IOnNetResultListener {
     }
 
 
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
         PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
         if (!pm.isScreenOn()) {
             PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP |
@@ -57,14 +57,12 @@ public class MyLockActivity extends Activity implements IOnNetResultListener {
             wl.release();
         }
 
-
     }
 
 
     protected void initView() {
         message = (TextView) findViewById(R.id.textView_message);
         time = (TextView) findViewById(R.id.textView_time);
-
 
     }
 

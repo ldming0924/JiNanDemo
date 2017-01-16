@@ -9,7 +9,7 @@ public class WarmBean {
     private String delFlag;
     private String deviceId;
     private String deviceName;
-    private String displayName;
+    private String name;
     private String elementId;
     private String id;
     private Object labelName;
@@ -64,12 +64,12 @@ public class WarmBean {
         this.deviceName = deviceName;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getName() {
+        return name;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getId() {

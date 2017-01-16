@@ -465,7 +465,7 @@ public class RealTimeDataFragment extends BaseFragment {
             List<ChildInfo> childInfos = new ArrayList<>();
             int size = totallist.get(i).getElements().size();
             for (int j = 0; j < size; j++) {
-                String displayName = totallist.get(i).getElements().get(j).getDisplayName();
+                String displayName = totallist.get(i).getElements().get(j).getName();
                 String address = totallist.get(i).getElements().get(j).getDefaultAddress();
 
                 for (int k = 0; k < ml.size(); k++) {
@@ -474,6 +474,7 @@ public class RealTimeDataFragment extends BaseFragment {
                         Map.Entry entry = (Map.Entry) iter.next();
                         String key = (String) entry.getKey();
                         if (totallist.get(i).getElements().get(j).getFieldName().equals(key)) {
+                            //Log.d("TAGT",displayName);
                             ChildInfo childInfo = new ChildInfo(displayName, ml.get(k).get(key), totallist.get(i).getElements().get(j).getUnit());
                             childInfos.add(childInfo);
                         }

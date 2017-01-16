@@ -36,7 +36,7 @@ import okhttp3.Response;
 /**
  * Created by Administrator on 2015/9/8.
  */
-public class WarnService extends Service implements IOnNetResultListener {
+public class WarnService extends Service {
 
     private boolean flag = true;
     private OkHttpHelper okHttpHelper;
@@ -72,8 +72,9 @@ public class WarnService extends Service implements IOnNetResultListener {
                                     object = new JSONObject(s);
                                     JSONArray array = object.getJSONArray("list");
                                     JSONObject obj = array.getJSONObject(0);
+                                    Log.d("WarnService",time+"  "+obj.getString("createDate"));
                                     if (!obj.getString("createDate").equals(time)) {
-                                        showNotification(getApplicationContext(), obj.getString("displayName"), obj.getString("createDate"));
+                                        showNotification(getApplicationContext(), obj.getString("name"), obj.getString("createDate"));
                                         time = obj.getString("createDate");
 
                                     }
@@ -133,30 +134,7 @@ public class WarnService extends Service implements IOnNetResultListener {
         super.onStart(intent, startId);
     }
 
-    @Override
-    public void onNetResult(int flag, String jsonResult) {
-        json = jsonResult;
-    }
 
-    @Override
-    public void onNetComplete(int flag) {
-        if (json != null) {
-
-            JSONObject object = null;
-            try {
-                object = new JSONObject(json);
-                JSONArray array = object.getJSONArray("list");
-                JSONObject obj = array.getJSONObject(0);
-                if (!obj.getString("createDate").equals(time)) {
-                    showNotification(getApplicationContext(), obj.getString("displayName"), obj.getString("createDate"));
-                    time = obj.getString("createDate");
-
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
 
     public class MyThread implements Runnable {
